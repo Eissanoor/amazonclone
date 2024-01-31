@@ -169,6 +169,27 @@ router.post("/add-brands", async (req, res) =>
     });
   }
 });
+router.get("/get-brand", async (req, res) =>
+{
+  try {
+   
+
+    const brand = await brands.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "Brand found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid brand ID",
+      data: null,
+    });
+  }
+});
 router.get("/get-brandbyid/:id", async (req, res) =>
 {
   try {
@@ -317,6 +338,27 @@ router.get("/get-hardiskbyid/:id", async (req, res) =>
         data: null,
       });
     }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid hardisk ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-hardisk", async (req, res) =>
+{
+  try {
+
+
+    const brand = await hardisk.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "hardisk found",
+      data: brand,
+    });
   } catch (e) {
     console.log(e);
     res.status(400).json({
