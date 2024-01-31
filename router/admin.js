@@ -13,6 +13,7 @@ const multer = require("multer");
 const auth = require("../middleware/auth");
 const adminauth = require("../model/adminauth");
 const brands = require("../model/brands")
+const hardisk = require("../model/hardisk")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -249,6 +250,133 @@ router.delete("/delete-brand/:id", async (req, res) =>
       res.status(404).json({
         status: 404,
         message: "Brand not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid brand ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-hardisk", async (req, res) =>
+{
+  try {
+    const hardiskname = req.body.hardiskname;
+    const status = req.body.status
+    const itemNameexist = await hardisk.findOne({ hardiskname: hardiskname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new hardisk({
+        hardiskname: req.body.hardiskname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "hardisk has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "hardisk name already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-hardiskbyid/:id", async (req, res) =>
+{
+  try {
+    const hardiskID = req.params.id;
+
+    const hardiskdata = await hardisk.findById(hardiskID);
+
+    if (hardiskdata) {
+      res.status(200).json({
+        status: 200,
+        message: "hardisk found",
+        data: hardiskdata,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "hardisk not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid hardisk ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-hardisk/:id", async (req, res) =>
+{
+  try {
+    const hardiskID = req.params.id;
+    const { hardiskname, status } = req.body;
+    console.log(status);
+    const existingBrand = await hardisk.findOne({ _id: hardiskID });
+    if (existingBrand) {
+      existingBrand.hardiskname = hardiskname || existingBrand.hardiskname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "hardisk has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "hardisk not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-hardisk/:id", async (req, res) =>
+{
+  try {
+    const hardiskID = req.params.id;
+
+    const deletedhardisk = await hardisk.findByIdAndDelete(hardiskID);
+
+    if (deletedhardisk) {
+      res.status(200).json({
+        status: 200,
+        message: "hardisk has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "hardisk not found",
         data: null,
       });
     }
