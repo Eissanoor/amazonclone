@@ -14,6 +14,7 @@ const auth = require("../middleware/auth");
 const adminauth = require("../model/adminauth");
 const brands = require("../model/brands")
 const hardisk = require("../model/hardisk")
+const cpu = require("../model/cpu")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -172,7 +173,7 @@ router.post("/add-brands", async (req, res) =>
 router.get("/get-brand", async (req, res) =>
 {
   try {
-   
+
 
     const brand = await brands.find();
 
@@ -373,7 +374,7 @@ router.put("/update-hardisk/:id", async (req, res) =>
   try {
     const hardiskID = req.params.id;
     const { hardiskname, status } = req.body;
-    console.log(status);
+   
     const existingBrand = await hardisk.findOne({ _id: hardiskID });
     if (existingBrand) {
       existingBrand.hardiskname = hardiskname || existingBrand.hardiskname;
@@ -427,6 +428,154 @@ router.delete("/delete-hardisk/:id", async (req, res) =>
     res.status(400).json({
       status: 400,
       message: "Invalid brand ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-cpu", async (req, res) =>
+{
+  try {
+    const cpuname = req.body.cpuname;
+    const status = req.body.status
+    const itemNameexist = await cpu.findOne({ cpuname: cpuname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new cpu({
+        cpuname: req.body.cpuname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "cpu has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "cpu name already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-cpubyid/:id", async (req, res) =>
+{
+  try {
+    const cpuID = req.params.id;
+
+    const cpuadd = await cpu.findById(cpuID);
+
+    if (cpuadd) {
+      res.status(200).json({
+        status: 200,
+        message: "cpu found",
+        data: cpuadd,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "cpu not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid cpu ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-cpu", async (req, res) =>
+{
+  try {
+
+
+    const brand = await cpu.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "cpu found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid cpu ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-cpu/:id", async (req, res) =>
+{
+  try {
+    const cpuID = req.params.id;
+    const { cpuname, status } = req.body;
+
+    const existingBrand = await cpu.findOne({ _id: cpuID });
+    if (existingBrand) {
+      existingBrand.cpuname = cpuname || existingBrand.cpuname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "cpu has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "cpu not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-cpu/:id", async (req, res) =>
+{
+  try {
+    const cpuID = req.params.id;
+
+    const deletecpu = await cpu.findByIdAndDelete(cpuID);
+
+    if (deletecpu) {
+      res.status(200).json({
+        status: 200,
+        message: "cpu has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "cpu not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid cpu ID",
       data: null,
     });
   }
