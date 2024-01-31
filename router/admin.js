@@ -42,6 +42,14 @@ const upload = multer({ storage: storage });
 router.use("/ProfileImage", express.static("public/upload"));
 router.use("/image", express.static("public/upload"));
 router.use("/categoryThumbnail", express.static("public/upload"));
+router.get("/", (req, res) =>
+{
+  res.status(201).json({
+    status: 201,
+    message: "server is running",
+    data: null,
+  });
+})
 router.post("/signUp", async (req, res) => {
   let qdate = new Date();
   let date = qdate.toDateString();
