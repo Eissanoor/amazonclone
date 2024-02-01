@@ -14,6 +14,7 @@ const auth = require("../middleware/auth");
 const adminauth = require("../model/adminauth");
 const brands = require("../model/brands")
 const hardisk = require("../model/hardisk")
+const operatingsystem = require("../model/operationSystem")
 const cpu = require("../model/cpu")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
@@ -374,7 +375,7 @@ router.put("/update-hardisk/:id", async (req, res) =>
   try {
     const hardiskID = req.params.id;
     const { hardiskname, status } = req.body;
-   
+
     const existingBrand = await hardisk.findOne({ _id: hardiskID });
     if (existingBrand) {
       existingBrand.hardiskname = hardiskname || existingBrand.hardiskname;
@@ -576,6 +577,154 @@ router.delete("/delete-cpu/:id", async (req, res) =>
     res.status(400).json({
       status: 400,
       message: "Invalid cpu ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-operating", async (req, res) =>
+{
+  try {
+    const operatingname = req.body.operatingname;
+    const status = req.body.status
+    const itemNameexist = await operatingsystem.findOne({ operatingname: operatingname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new operatingsystem({
+        operatingname: req.body.operatingname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "operating system has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "operating system name already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-operatingbyid/:id", async (req, res) =>
+{
+  try {
+    const operatingID = req.params.id;
+
+    const operatingadd = await operatingsystem.findById(operatingID);
+
+    if (operatingadd) {
+      res.status(200).json({
+        status: 200,
+        message: "operating system found",
+        data: operatingadd,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "operating system not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid operating system ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-operating", async (req, res) =>
+{
+  try {
+
+
+    const brand = await operatingsystem.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "operating system found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid operating system ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-operating/:id", async (req, res) =>
+{
+  try {
+    const operatingID = req.params.id;
+    const { operatingname, status } = req.body;
+
+    const existingBrand = await operatingsystem.findOne({ _id: operatingID });
+    if (existingBrand) {
+      existingBrand.operatingname = operatingname || existingBrand.operatingname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "operating system has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "operating system not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-operating/:id", async (req, res) =>
+{
+  try {
+    const operatingID = req.params.id;
+
+    const deletecpu = await operatingsystem.findByIdAndDelete(operatingID);
+
+    if (deletecpu) {
+      res.status(200).json({
+        status: 200,
+        message: "operating system has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "operating system not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid operating ID",
       data: null,
     });
   }
