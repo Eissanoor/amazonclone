@@ -17,6 +17,7 @@ const hardisk = require("../model/hardisk")
 const operatingsystem = require("../model/operationSystem")
 const ram = require("../model/ram")
 const cpu = require("../model/cpu")
+const asin = require("../model/asin")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -874,6 +875,154 @@ router.delete("/delete-ram/:id", async (req, res) =>
     res.status(400).json({
       status: 400,
       message: "Invalid ram ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-asin", async (req, res) =>
+{
+  try {
+    const asinname = req.body.asinname;
+    const status = req.body.status
+    const itemNameexist = await asin.findOne({ asinname: asinname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new asin({
+        asinname: req.body.asinname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "asin has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "asin already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-asinbyid/:id", async (req, res) =>
+{
+  try {
+    const asimID = req.params.id;
+
+    const RamID = await asin.findById(asimID);
+
+    if (RamID) {
+      res.status(200).json({
+        status: 200,
+        message: "asin found",
+        data: RamID,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "asin not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid asin ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-asin", async (req, res) =>
+{
+  try {
+
+
+    const brand = await asin.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "asin found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid asin ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-asin/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+    const { asinname, status } = req.body;
+
+    const existingBrand = await asin.findOne({ _id: ramID });
+    if (existingBrand) {
+      existingBrand.asinname = asinname || existingBrand.asinname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "asin has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "asin not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-asin/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+
+    const deletecpu = await asin.findByIdAndDelete(ramID);
+
+    if (deletecpu) {
+      res.status(200).json({
+        status: 200,
+        message: "asin has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "asin not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid asin ID",
       data: null,
     });
   }
