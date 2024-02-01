@@ -15,6 +15,7 @@ const adminauth = require("../model/adminauth");
 const brands = require("../model/brands")
 const hardisk = require("../model/hardisk")
 const operatingsystem = require("../model/operationSystem")
+const ram = require("../model/ram")
 const cpu = require("../model/cpu")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
@@ -725,6 +726,154 @@ router.delete("/delete-operating/:id", async (req, res) =>
     res.status(400).json({
       status: 400,
       message: "Invalid operating ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-ram", async (req, res) =>
+{
+  try {
+    const ramname = req.body.ramname;
+    const status = req.body.status
+    const itemNameexist = await ram.findOne({ ramname: ramname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new ram({
+        ramname: req.body.ramname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "ram has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "ram already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-rambyid/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+
+    const RamID = await ram.findById(ramID);
+
+    if (RamID) {
+      res.status(200).json({
+        status: 200,
+        message: "ram found",
+        data: RamID,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "ram not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid ram ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-ram", async (req, res) =>
+{
+  try {
+
+
+    const brand = await ram.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "ram found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid ram ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-ram/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+    const { ramname, status } = req.body;
+
+    const existingBrand = await ram.findOne({ _id: ramID });
+    if (existingBrand) {
+      existingBrand.ramname = ramname || existingBrand.ramname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "ram has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "ram not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-ram/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+
+    const deletecpu = await ram.findByIdAndDelete(ramID);
+
+    if (deletecpu) {
+      res.status(200).json({
+        status: 200,
+        message: "ram has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "ram not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid ram ID",
       data: null,
     });
   }
