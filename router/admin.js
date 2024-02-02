@@ -18,6 +18,7 @@ const operatingsystem = require("../model/operationSystem")
 const ram = require("../model/ram")
 const cpu = require("../model/cpu")
 const asin = require("../model/asin")
+const category = require("../model/category")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1023,6 +1024,154 @@ router.delete("/delete-asin/:id", async (req, res) =>
     res.status(400).json({
       status: 400,
       message: "Invalid asin ID",
+      data: null,
+    });
+  }
+});
+router.post("/add-category", async (req, res) =>
+{
+  try {
+    const categoryname = req.body.categoryname;
+    const status = req.body.status
+    const itemNameexist = await category.findOne({ categoryname: categoryname });
+    if (!itemNameexist) {
+
+
+      const MenuEmp = new category({
+        categoryname: req.body.categoryname,
+        status: status
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "category has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "category already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-categorybyid/:id", async (req, res) =>
+{
+  try {
+    const asimID = req.params.id;
+
+    const RamID = await category.findById(asimID);
+
+    if (RamID) {
+      res.status(200).json({
+        status: 200,
+        message: "category found",
+        data: RamID,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "category not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid category ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-category", async (req, res) =>
+{
+  try {
+
+
+    const brand = await category.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "category found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid category ID",
+      data: null,
+    });
+  }
+});
+router.put("/update-category/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+    const { categoryname, status } = req.body;
+
+    const existingBrand = await category.findOne({ _id: ramID });
+    if (existingBrand) {
+      existingBrand.categoryname = categoryname || existingBrand.categoryname;
+      existingBrand.status = status || existingBrand.status;
+
+      await existingBrand.save();
+
+      res.status(200).json({
+        status: 200,
+        message: "category has been updated",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "category not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing or invalid",
+      data: null,
+    });
+  }
+});
+router.delete("/delete-category/:id", async (req, res) =>
+{
+  try {
+    const ramID = req.params.id;
+
+    const deletecpu = await category.findByIdAndDelete(ramID);
+
+    if (deletecpu) {
+      res.status(200).json({
+        status: 200,
+        message: "category has been deleted",
+        data: null,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "category not found",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid category ID",
       data: null,
     });
   }
