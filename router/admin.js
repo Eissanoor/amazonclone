@@ -19,6 +19,7 @@ const ram = require("../model/ram")
 const cpu = require("../model/cpu")
 const asin = require("../model/asin")
 const category = require("../model/category")
+const subcategory = require("../model/subcategory")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1176,4 +1177,183 @@ router.delete("/delete-category/:id", async (req, res) =>
     });
   }
 });
+router.post("/add-subcategory", upload.single("image"),  async (req, res) =>
+{
+  try {
+    const subcategoryname = req.body.subcategoryname;
+    const status = req.body.status
+    const categoryId = req.body.categoryId
+    const itemNameexist = await subcategory.findOne({ subcategoryname: subcategoryname });
+    if (!itemNameexist) {
+      const file = req.file;
+      let ManuImage = null;
+
+      if (file) {
+        ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+
+        const result = await cloudinary.uploader.upload(ManuImage);
+        ManuImage = result.url;
+      }
+
+      const MenuEmp = new subcategory({
+        subcategoryname: req.body.subcategoryname,
+        status: status,
+        categoryId: categoryId,
+        image: ManuImage
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "subcategory has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "subcategory already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/subcategory/:id", async (req, res) =>
+{
+  try {
+    const subcategoryId = req.params.id;
+    const subcategory = await subcategory.findById(subcategoryId);
+    if (subcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "Subcategory found",
+        data: subcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "Subcategory not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.get("/get-subcategory", async (req, res) =>
+{
+  try {
+
+
+    const brand = await subcategory.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "subcategory found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid subcategory ID",
+      data: null,
+    });
+  }
+});
+router.put("/subcategory/:id", upload.single("image"), async (req, res) =>
+{
+  try {
+    const subcategoryId = req.params.id;
+    const { subcategoryname, status, categoryId } = req.body;
+    const file = req.file;
+
+    // Check if a file is uploaded
+    let ManuImage = null;
+    if (file) {
+      ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+      const result = await cloudinary.uploader.upload(ManuImage);
+      ManuImage = result.url;
+    } else {
+      // If no file is uploaded, retain the existing image
+      const subcategoryData = await subcategory.findById(subcategoryId);
+      if (subcategoryData) {
+        ManuImage = subcategoryData.image;
+      }
+    }
+
+    const updatedData = {
+      subcategoryname,
+      status,
+      categoryId,
+      image: ManuImage,
+    };
+
+    const updatedSubcategory = await subcategory.findByIdAndUpdate(
+      subcategoryId,
+      updatedData,
+      { new: true }
+    );
+
+    if (updatedSubcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "Subcategory updated successfully",
+        data: updatedSubcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "Subcategory not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+
+router.delete("/subcategory/:id", async (req, res) =>
+{
+  try {
+    const subcategoryId = req.params.id;
+    const deletedSubcategory = await subcategory.findByIdAndDelete(subcategoryId);
+    if (deletedSubcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "Subcategory deleted successfully",
+        data: deletedSubcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "Subcategory not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+
 module.exports = router;
