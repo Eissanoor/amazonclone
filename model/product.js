@@ -1,13 +1,14 @@
-const mongoose = require("mongoose");
+const { Schema, mongoose } = require("mongoose");
 const productschema = new mongoose.Schema(
     {
         productname: {
             type: String,
             required: true,
         },
+        subcategoryId: { type: Schema.Types.ObjectId, ref: "subcategory", require: true },
         slug: String,
         image: String,
-        thumnail: String,
+        thumbnails: [String], 
         brands: String,
         hardisk: String,
         cpu: String,

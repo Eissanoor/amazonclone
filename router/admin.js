@@ -6,6 +6,7 @@ const nodemailer = require("nodemailer");
 const validator = require("validator");
 const cron = require("node-cron");
 const path = require("path");
+const slugify = require('slugify');
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieparser = require("cookie-parser");
@@ -20,6 +21,7 @@ const cpu = require("../model/cpu")
 const asin = require("../model/asin")
 const category = require("../model/category")
 const subcategory = require("../model/subcategory")
+const product = require("../model/product")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1177,7 +1179,7 @@ router.delete("/delete-category/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-subcategory", upload.single("image"),  async (req, res) =>
+router.post("/add-subcategory", upload.single("image"), async (req, res) =>
 {
   try {
     const subcategoryname = req.body.subcategoryname;
@@ -1227,12 +1229,12 @@ router.get("/subcategory/:id", async (req, res) =>
 {
   try {
     const subcategoryId = req.params.id;
-    const subcategory = await subcategory.findById(subcategoryId);
-    if (subcategory) {
+    const subcategory1 = await subcategory.findById(subcategoryId);
+    if (subcategory1) {
       res.status(200).json({
         status: 200,
         message: "Subcategory found",
-        data: subcategory,
+        data: subcategory1,
       });
     } else {
       res.status(404).json({
@@ -1327,7 +1329,6 @@ router.put("/subcategory/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-
 router.delete("/subcategory/:id", async (req, res) =>
 {
   try {
@@ -1355,5 +1356,259 @@ router.delete("/subcategory/:id", async (req, res) =>
     });
   }
 });
+router.post("/add-products", upload.single("image"), async (req, res) =>
+{
+  try {
+    const productname = req.body.productname;
+    const status = req.body.status
+    const subcategoryId = req.body.subcategoryId
+    const slug1 = req.body.slug
+    const slug = slugify(slug1, {
+      replacement: '-',  // replace spaces with -
+      lower: true       // convert to lower case
+    });
+    const brands = req.body.brands
+    const hardisk = req.body.hardisk
+    const cpu = req.body.cpu
+    const operatingsysytem = req.body.operatingsysytem
+    const ram = req.body.ram
+    const asin = req.body.asin
+    const description = req.body.description
+    const price = req.body.price
+    const stock = req.body.stock
+    const itemNameexist = await product.findOne({ productname: productname });
+    if (!itemNameexist) {
+      const file = req.file;
+      let ManuImage = null;
 
+      if (file) {
+        ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+
+        const result = await cloudinary.uploader.upload(ManuImage);
+        ManuImage = result.url;
+      }
+
+      const MenuEmp = new product({
+        productname: req.body.productname,
+        status: status,
+        subcategoryId: subcategoryId,
+        image: ManuImage,
+        slug: slug,
+        brands: brands,
+        hardisk: hardisk,
+        cpu: cpu,
+        operatingsysytem: operatingsysytem,
+        ram: ram,
+        asin: asin,
+        description: description,
+        price: price,
+        stock: stock
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "product has been Added",
+        data: MenuEmp,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "product already present",
+        data: null,
+      });
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/products/:id", async (req, res) =>
+{
+  try {
+    const productsID = req.params.id;
+    const subcategory = await product.findById(productsID);
+    if (subcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "product found",
+        data: subcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "products not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.get("/get-products", async (req, res) =>
+{
+  try {
+
+
+    const brand = await product.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "products found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid products ID",
+      data: null,
+    });
+  }
+});
+router.put("/products/:id", upload.single("image"), async (req, res) =>
+{
+  try {
+    const productId = req.params.id;
+    const { productname, status, subcategoryId, slug: slug1, brands, hardisk, cpu, operatingsysytem, ram, asin, description, price, stock } = req.body;
+
+
+    const slug = slugify(slug1, {
+      replacement: '-',
+      lower: true
+    });
+
+
+    const existingProduct = await product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+        data: null,
+      });
+    }
+
+
+    let ManuImage = null;
+    if (req.file) {
+
+      ManuImage = `data:image/png;base64,${req.file.buffer.toString("base64")}`;
+      const result = await cloudinary.uploader.upload(ManuImage);
+      ManuImage = result.url;
+    } else {
+
+      ManuImage = existingProduct.image;
+    }
+
+
+    existingProduct.productname = productname;
+    existingProduct.status = status;
+    existingProduct.subcategoryId = subcategoryId;
+    existingProduct.slug = slug;
+    existingProduct.brands = brands;
+    existingProduct.hardisk = hardisk;
+    existingProduct.cpu = cpu;
+    existingProduct.operatingsysytem = operatingsysytem;
+    existingProduct.ram = ram;
+    existingProduct.asin = asin;
+    existingProduct.description = description;
+    existingProduct.price = price;
+    existingProduct.stock = stock;
+    existingProduct.image = ManuImage;
+
+
+    const updatedProduct = await existingProduct.save();
+    res.status(200).json({
+      status: 200,
+      message: "Product updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.put("/productsthumbnail/:id", upload.array("thumbnails", 8), async (req, res) =>
+{
+  try {
+    const productId = req.params.id;
+    const existingProduct = await product.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+        data: null,
+      });
+    }
+
+    let newThumbnails = [];
+
+    if (req.files && req.files.length > 0) {
+      for (let file of req.files) {
+        const thumbnailImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+        const result = await cloudinary.uploader.upload(thumbnailImage);
+        newThumbnails.push(result.url);
+      }
+    }
+
+    // Concatenate existing thumbnails with new thumbnails
+    const updatedThumbnails = existingProduct.thumbnails.concat(newThumbnails);
+
+    // Update product's thumbnails
+    existingProduct.thumbnails = updatedThumbnails;
+
+    const updatedProduct = await existingProduct.save();
+    res.status(200).json({
+      status: 200,
+      message: "Product thumbnails updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.delete("/products/:id", async (req, res) =>
+{
+  try {
+    const subcategoryId = req.params.id;
+    const deletedSubcategory = await product.findByIdAndDelete(subcategoryId);
+    if (deletedSubcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "products deleted successfully",
+        data: deletedSubcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "products not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
 module.exports = router;
