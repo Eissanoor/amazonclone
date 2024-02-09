@@ -1613,4 +1613,51 @@ router.delete("/products/:id", async (req, res) =>
 });
 
 //--------------------------------USERS-SIDE---------------------------------------
+router.get("/get-subcategory-user", async (req, res) =>
+{
+  try {
+
+
+    const brand = await subcategory.find().populate('categoryId');
+
+    res.status(200).json({
+      status: 200,
+      message: "subcategory found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid subcategory ID",
+      data: null,
+    });
+  }
+});
+router.get("/get-products-user", async (req, res) =>
+{
+  try {
+    const products = await product.find().populate({
+      path: 'subcategoryId',
+      populate: {
+        path: 'categoryId'
+      }
+    });;
+
+    res.status(200).json({
+      status: 200,
+      message: "Products found",
+      data: products
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 400,
+      message: "Error: Invalid product ID",
+      data: null,
+    });
+  }
+});
+
+
 module.exports = router;
