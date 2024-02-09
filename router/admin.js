@@ -1611,4 +1611,6 @@ router.delete("/products/:id", async (req, res) =>
     });
   }
 });
+
+//--------------------------------USERS-SIDE---------------------------------------
 module.exports = router;
