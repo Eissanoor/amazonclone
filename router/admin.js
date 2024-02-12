@@ -1658,6 +1658,33 @@ router.get("/get-products-user", async (req, res) =>
     });
   }
 });
+router.get("/subcategory_getbycategoryId/:categoryId", async (req, res) =>
+{
+  try {
+    const categoryId = req.params.categoryId;
+    const subcategory1 = await subcategory.findOne({ categoryId: categoryId });
+    if (subcategory1) {
+      res.status(200).json({
+        status: 200,
+        message: "Subcategory found",
+        data: subcategory1,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "Subcategory not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
 
 
 module.exports = router;
