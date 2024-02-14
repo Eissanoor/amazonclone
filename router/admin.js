@@ -23,6 +23,7 @@ const category = require("../model/category")
 const subcategory = require("../model/subcategory")
 const product = require("../model/product")
 const userauth = require("../model/userauth")
+const emailvarify = require("../model/emailotp")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1716,6 +1717,38 @@ router.post("/user-signup", async (req, res) =>
       message: "user has been Created",
       data: data,
     });
+    var transpoter = nodemailer.createTransport({
+      service: "gmail",
+      auth: {
+        user: "wasimxaman13@gmail.com",
+        pass: Email_otp_pass,
+      },
+
+    });
+    var mailoption = {
+      from: "wasimxaman13@gmail.com",
+      to: email,
+      subject: "Varify Email",
+      html: `<p>Please click the following link to verify your email: <a href="https://tech-geeks.vercel.app/login">Verify Email</a></p>`,
+    };
+    transpoter.sendMail(mailoption, function (error, info)
+    {
+      if (error) {
+        console.log(error);
+        res.status(500).json({
+          status: 500,
+          message: "Failed to send OTP email",
+          data: null,
+        });
+      } else {
+        console.log("Email sent: " + info.response);
+        res.status(201).json({
+          status: 201,
+          message: "Send link successfully",
+          data: null,
+        });
+      }
+    });
   } catch (e) {
     console.log(e);
     res.status(400).json({ status: 400, message: "not found", data: null });
@@ -1763,6 +1796,106 @@ router.post("/user-Login", async (req, res) =>
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: 400, message: "invalid email", data: null });
+  }
+});
+router.post("/send-otp", async (req, res) =>
+{
+  try {
+    let email = req.body.email;
+    const mail = await userauth.findOne({ email: email });
+    if (!mail) {
+      res
+        .status(404)
+        .json({ status: 400, message: "This email not exist", data: null });
+    } else {
+      const random = Math.floor(Math.random() * 10000) + 1;
+      console.log(random);
+      const otpData = new emailvarify({
+        email: req.body.email,
+        code: random,
+        expireIn: new Date().getTime() + 60 * 10000,
+      });
+      var transpoter = nodemailer.createTransport({
+        service: "gmail",
+        auth: {
+          user: "wasimxaman13@gmail.com",
+          pass: Email_otp_pass,
+        },
+      });
+      var mailoption = {
+        from: "wasimxaman13@gmail.com",
+        to: email,
+        subject: "sending email using nodejs",
+        text: `Varify Email OTP ${random}`,
+      };
+      transpoter.sendMail(mailoption, function (error, info)
+      {
+        if (error) {
+          console.log(error);
+          res.status(500).json({
+            status: 500,
+            message: "Failed to send OTP email",
+            data: null,
+          });
+        } else {
+          console.log("Email sent: " + info.response);
+          res.status(201).json({
+            status: 201,
+            message: "Send OTP successfully",
+            data: { Otp: random },
+          });
+        }
+      });
+      const varifyemail = await otpData.save();
+      res.status(201).json({
+        status: 201,
+        message: "Send otp successfully",
+        data: { Otp: random },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "internel Server error",
+      data: null,
+    });
+  }
+});
+router.post("/emailVrifyOtp", async (req, res) =>
+{
+  try {
+    const email = req.body.email;
+    const code = req.body.code;
+    const mail = await emailvarify.findOne({ code: code, email: email });
+    if (mail) {
+      const currentTime = new Date().getTime();
+      const Diff = mail.expireIn - currentTime;
+      if (Diff < 0) {
+        res.status(401).json({
+          status: 401,
+          message: "otp expire with in 5 mints",
+          data: null,
+        });
+      } else {
+        const getmens = await userauth.findOneAndUpdate(
+          { email: email },
+          { $set: { isVarified: true } },
+          { new: true }
+        );
+
+        res.status(200).json({
+          status: 200,
+          message: "email varification successful",
+          data: null,
+        });
+      }
+    } else {
+      res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
   }
 });
 module.exports = router;
