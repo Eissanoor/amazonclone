@@ -1898,4 +1898,57 @@ router.post("/emailVrifyOtp", async (req, res) =>
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
   }
 });
+router.put("/update-user-profile/:_id", upload.single("image"), async (req, res) =>
+{
+  try {
+    const id = req.params._id;
+
+    const user = await userauth.findOne({ _id: id });
+
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: "user not found",
+        data: null,
+      });
+    }
+    const file = req.file;
+    let profileImageURL = user.image;
+
+    if (file) {
+      profileImageURL = `data:image/png;base64,${file.buffer.toString(
+        "base64"
+      )}`;
+
+      const result = await cloudinary.uploader.upload(profileImageURL);
+      profileImageURL = result.url;
+    }
+    const updatedUser = await userauth.findOneAndUpdate(
+      { _id: id },
+      { ...req.body, image: profileImageURL },
+      { new: true, runValidators: true }
+    );
+
+    if (!updatedUser) {
+      return res.status(404).json({
+        status: 404,
+        message: "user not found",
+        data: null,
+      });
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "user updated successfully",
+      data: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+});
 module.exports = router;

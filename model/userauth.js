@@ -27,7 +27,8 @@ const empoleeSchema = new mongoose.Schema(
         },
         isVarified: Boolean,
         isNewUser: Boolean,
-        name:String,
+        name: String,
+        image:String,
         token: {
             type: String,
         },
