@@ -22,6 +22,7 @@ const asin = require("../model/asin")
 const category = require("../model/category")
 const subcategory = require("../model/subcategory")
 const product = require("../model/product")
+const userauth = require("../model/userauth")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1685,6 +1686,83 @@ router.get("/subcategory_getbycategoryId/:categoryId", async (req, res) =>
     });
   }
 });
+router.post("/user-signup", async (req, res) =>
+{
+  let qdate = new Date();
+  let date = qdate.toDateString();
+  let Id = Math.floor(Math.random() * 10000000) + 1;
+  let email = req.body.email;
+  const mail = await userauth.findOne({ email: email });
+  if (mail) {
+    res
+      .status(404)
+      .json({ status: 404, message: "email already present", data: null });
+  }
+  try {
+    const registerEmp = new userauth({
+      Id: Id,
+      name: req.body.name,
+      password: req.body.password,
+      email: req.body.email,
+      isVarified: false,
+      isNewUser: true,
+    });
+    const registered = await registerEmp.save();
+    const data = await userauth
+      .findOne({ email: email })
+      .select({ _id: 1, email: 1 });
+    res.status(201).json({
+      status: 201,
+      message: "user has been Created",
+      data: data,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({ status: 400, message: "not found", data: null });
+  }
+});
+router.post("/user-Login", async (req, res) =>
+{
+  try {
+    const email = req.body.email;
+    const password = req.body.password;
+    const oneMonthInMillis = 30 * 24 * 60 * 60 * 1000;
+    const expirationTime = new Date().getTime() + oneMonthInMillis;
+    const useremail = await userauth.findOne({ email: email });
+    const ismatch = await bcrypt.compare(password, useremail.password);
 
-
+    if (!useremail || !password) {
+      res.status(400).json({
+        status: 400,
+        message: "Enter Correct email or password",
+        data: null,
+      });
+    } else if (ismatch) {
+      const getmens = await userauth.findOneAndUpdate(
+        { email: email },
+        { $set: { expireIn: expirationTime } },
+        { new: true }
+      );
+      const token = await useremail.generateAuthToken();
+      res.cookie("jwt", token, { httpOnly: true });
+      res.status(200).json({
+        status: 200,
+        message: "Login Successfully",
+        data: {
+          _id: useremail._id,
+          isVerified: useremail.isVarified,
+          isNewUser: useremail.isNewUser,
+          accessToken: token,
+        },
+      });
+    } else {
+      res
+        .status(404)
+        .json({ status: 400, message: "Invalid Password", data: null });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ status: 400, message: "invalid email", data: null });
+  }
+});
 module.exports = router;
