@@ -1785,6 +1785,8 @@ router.post("/user-Login", async (req, res) =>
           _id: useremail._id,
           isVerified: useremail.isVarified,
           isNewUser: useremail.isNewUser,
+          name: useremail.name,
+          email:useremail.email,
           accessToken: token,
         },
       });
@@ -1949,6 +1951,43 @@ router.put("/update-user-profile/:_id", upload.single("image"), async (req, res)
       message: "Internal server error",
       data: null,
     });
+  }
+});
+router.post("/changePassword", async (req, res) =>
+{
+  try {
+    const email = req.body.email;
+    const code = req.body.code;
+    const mail = await emailvarify.findOne({ code: code, email: email });
+    if (mail) {
+      const currentTime = new Date().getTime();
+      const Diff = mail.expireIn - currentTime;
+      console.log(Diff);
+      if (Diff < 0) {
+        res.status(401).json({
+          status: 401,
+          message: "otp expire with in 5 mints",
+          data: null,
+        });
+      } else {
+        const mailVarify = await userauth.findOne({ email: email });
+        const password = req.body.password;
+        const ismatch = await bcrypt.compare(password, mailVarify.password);
+        console.log(ismatch);
+        mailVarify.password = password;
+        const registered = await mailVarify.save();
+        res.status(201).json({
+          status: 201,
+          message: "password change successful",
+          data: mailVarify,
+        });
+      }
+    } else {
+      res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
   }
 });
 module.exports = router;
