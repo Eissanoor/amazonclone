@@ -1957,34 +1957,26 @@ router.post("/changePassword", async (req, res) =>
 {
   try {
     const email = req.body.email;
-    const code = req.body.code;
-    const mail = await emailvarify.findOne({ code: code, email: email });
-    if (mail) {
-      const currentTime = new Date().getTime();
-      const Diff = mail.expireIn - currentTime;
-      console.log(Diff);
-      if (Diff < 0) {
-        res.status(401).json({
-          status: 401,
-          message: "otp expire with in 5 mints",
-          data: null,
-        });
-      } else {
-        const mailVarify = await userauth.findOne({ email: email });
-        const password = req.body.password;
-        const ismatch = await bcrypt.compare(password, mailVarify.password);
-        console.log(ismatch);
-        mailVarify.password = password;
-        const registered = await mailVarify.save();
-        res.status(201).json({
-          status: 201,
-          message: "password change successful",
-          data: mailVarify,
-        });
-      }
+    const mailVarify = await userauth.findOne({ email: email });
+    if (mailVarify) {
+      const password = req.body.password;
+      const ismatch = await bcrypt.compare(password, mailVarify.password);
+      console.log(ismatch);
+      mailVarify.password = password;
+      const registered = await mailVarify.save();
+      res.status(201).json({
+        status: 201,
+        message: "password change successful",
+        data: mailVarify,
+      });
+
+     
     } else {
-      res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
-    }
+      
+      res.status(400).json({ status: 400, message: "email not exist", data: null });
+}
+        
+    
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
