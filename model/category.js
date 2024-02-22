@@ -5,7 +5,8 @@ const categoryschema = new mongoose.Schema(
             type: String,
             required: true,
         },
-        status: Number
+        status: Number,
+        image:String
     },
     {
         timestamps: true,

@@ -1033,18 +1033,27 @@ router.delete("/delete-asin/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-category", async (req, res) =>
+router.post("/add-category", upload.single("image"), async (req, res) =>
 {
   try {
     const categoryname = req.body.categoryname;
     const status = req.body.status
     const itemNameexist = await category.findOne({ categoryname: categoryname });
     if (!itemNameexist) {
+      const file = req.file;
+      let ManuImage = null;
 
+      if (file) {
+        ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+
+        const result = await cloudinary.uploader.upload(ManuImage);
+        ManuImage = result.url;
+      }
 
       const MenuEmp = new category({
         categoryname: req.body.categoryname,
-        status: status
+        status: status,
+        image: ManuImage
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -1118,16 +1127,26 @@ router.get("/get-category", async (req, res) =>
     });
   }
 });
-router.put("/update-category/:id", async (req, res) =>
+router.put("/update-category/:id", upload.single("image"), async (req, res) =>
 {
   try {
     const ramID = req.params.id;
-    const { categoryname, status } = req.body;
+    const { categoryname, status,image } = req.body;
 
     const existingBrand = await category.findOne({ _id: ramID });
     if (existingBrand) {
+
+      const file = req.file;
+
+      // Check if a file is uploaded
+      let ManuImage = null;
+      if (file) {
+        ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+        const result = await cloudinary.uploader.upload(ManuImage);
+        ManuImage = result.url;
+      }
       existingBrand.categoryname = categoryname || existingBrand.categoryname;
-      existingBrand.status = status || existingBrand.status;
+      existingBrand.status = status || existingBrand.status; existingBrand.image = ManuImage || existingBrand.image;
 
       await existingBrand.save();
 
