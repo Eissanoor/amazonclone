@@ -1615,16 +1615,16 @@ router.delete("/products/:id", async (req, res) =>
 });
 
 //--------------------------------USERS-SIDE---------------------------------------
-router.get("/get-subcategory-user", async (req, res) =>
+router.get("/get-category-user", async (req, res) =>
 {
   try {
 
 
-    const brand = await subcategory.find().populate('categoryId');
+    const brand = await category.find();
 
     res.status(200).json({
       status: 200,
-      message: "subcategory found",
+      message: "category found",
       data: brand,
     });
   } catch (e) {
