@@ -1382,7 +1382,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
   try {
     const productname = req.body.productname;
     const status = req.body.status
-    const subcategoryId = req.body.subcategoryId
+    const subcategoryId = req.body.categoryId
     const slug1 = req.body.slug
     const slug = slugify(slug1, {
       replacement: '-',  // replace spaces with -
@@ -1412,7 +1412,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
       const MenuEmp = new product({
         productname: req.body.productname,
         status: status,
-        subcategoryId: subcategoryId,
+        categoryId: subcategoryId,
         image: ManuImage,
         slug: slug,
         brands: brands,
@@ -1659,7 +1659,7 @@ router.get("/get-products-user", async (req, res) =>
 {
   try {
     const products = await product.find().populate({
-      path: 'subcategoryId',
+      path: 'categoryId',
       populate: {
         path: 'categoryId'
       }
