@@ -1131,7 +1131,7 @@ router.put("/update-category/:id", upload.single("image"), async (req, res) =>
 {
   try {
     const ramID = req.params.id;
-    const { categoryname, status,image } = req.body;
+    const { categoryname, status, image } = req.body;
 
     const existingBrand = await category.findOne({ _id: ramID });
     if (existingBrand) {
@@ -1705,21 +1705,21 @@ router.get("/get-allproducts-user", async (req, res) =>
     });
   }
 });
-router.get("/subcategory_getbycategoryId/:categoryId", async (req, res) =>
+router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
 {
   try {
     const categoryId = req.params.categoryId;
-    const subcategory1 = await subcategory.findOne({ categoryId: categoryId });
+    const subcategory1 = await product.find({ categoryId: categoryId });
     if (subcategory1) {
       res.status(200).json({
         status: 200,
-        message: "Subcategory found",
+        message: "product found",
         data: subcategory1,
       });
     } else {
       res.status(404).json({
         status: 404,
-        message: "Subcategory not found",
+        message: "product not found",
         data: null,
       });
     }
@@ -1831,7 +1831,7 @@ router.post("/user-Login", async (req, res) =>
           isVerified: useremail.isVarified,
           isNewUser: useremail.isNewUser,
           name: useremail.name,
-          email:useremail.email,
+          email: useremail.email,
           accessToken: token,
         },
       });
@@ -2015,13 +2015,13 @@ router.post("/changePassword", async (req, res) =>
         data: mailVarify,
       });
 
-     
+
     } else {
-      
+
       res.status(400).json({ status: 400, message: "email not exist", data: null });
-}
-        
-    
+    }
+
+
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
