@@ -24,6 +24,7 @@ const subcategory = require("../model/subcategory")
 const product = require("../model/product")
 const userauth = require("../model/userauth")
 const emailvarify = require("../model/emailotp")
+const cartitem = require("../model/cartItem")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -2025,6 +2026,207 @@ router.post("/changePassword", async (req, res) =>
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
+  }
+});
+router.post("/add-or-remove-product-item-addtocart", async (req, res) =>
+{
+  try {
+    const productId = req.body.productId;
+    const userId = req.body.userId;
+    const AddToCartexist = await cartitem.findOne({
+      productId,
+      userId,
+      status: "Active",
+    });
+
+    if (!AddToCartexist) {
+      const AddToCartexistAdd = new cartitem({
+        userId: req.body.userId,
+        productId: req.body.productId,
+        status: "Active",
+
+        quantity: 1,
+      });
+      const menu = await AddToCartexistAdd.save();
+      res.status(201).json({
+        status: 201,
+        message: "Successfully added item into cart",
+        data: null,
+      });
+    } else {
+      const result = await cartitem.deleteOne({ productId: productId });
+      if (result.deletedCount === 1) {
+        res.status(200).json({
+          status: 200,
+          message: "Successfully deleted item from the cart",
+          data: null,
+        });
+      } else {
+        res
+          .status(404)
+          .json({ status: 404, message: "Food is not found", data: null });
+      }
+    }
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/get-product-item-to-addtocart/:userId", async (req, res) =>
+{
+  try {
+    const userId = req.params.userId;
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const skip = (page - 1) * pageSize;
+
+    const data = await cartitem.findOne({ userId: userId });
+
+    if (data) {
+      const data1 = await cartitem.find(
+        { userId: userId },
+        { _id: 0, userId: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+      )
+        .populate("productId")
+        .skip(skip);
+
+      const foodIdArray = data1
+        .filter((item) => item.productId && item.status === "Active")
+        .map((item) => ({
+          productId: item.productId,
+          status: item.status,
+          quantity: item.quantity,
+        }));
+
+      res.status(200).json({
+        status: 200,
+        message: "addtocart User details",
+        data: foodIdArray,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "It seems like your cart is empty",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal server error",
+      data: null,
+    });
+  }
+});
+router.get("/get-foodid-to-addtocart", async (req, res) =>
+{
+  try {
+    const userId = String(req.query.userId);
+    const productId = String(req.query.productId);
+    const cartItem = await cartitem.findOne({ userId, productId });
+    if (!cartItem || cartItem.status !== "Active") {
+      res.status(200).json({
+        status: 200,
+        message: "cartitem product IDs",
+        data: { isInCart: false },
+      });
+    } else {
+      res.status(200).json({
+        status: 200,
+        message: "cartitem product IDs",
+        data: { isInCart: true },
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: { isInCart: false },
+    });
+  }
+});
+router.put("/product-item-addtocart-quantity-inc", async (req, res) =>
+{
+  try {
+    const userId = String(req.query.userId);
+    const productId = String(req.query.productId);
+    const data = await cartitem.findOne({ userId, productId, status: "Active" });
+
+    if (!data) {
+      res.status(200).json({
+        status: 200,
+        message: "Not found",
+        data: null,
+      });
+    } else {
+      const updatedCount = await cartitem.findOneAndUpdate(
+        { userId: userId, productId: productId, status: "Active" },
+        { $inc: { quantity: 1 } },
+        { new: true }
+      );
+      res.status(200).json({
+        status: 200,
+        message: "quantity added",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({
+      status: 200,
+      message: "Not into cart",
+      data: null,
+    });
+  }
+});
+router.put("/product-item-addtocart-quantity-dec", async (req, res) =>
+{
+  try {
+    const userId = String(req.query.userId);
+    const productId = String(req.query.productId);
+
+    const data = await cartitem.findOne({ userId, productId, status: "Active" });
+
+    if (!data) {
+      res.status(404).json({
+        status: 404,
+        message: "Item not found in the cart",
+        data: null,
+      });
+    } else {
+      if (data.quantity > 1) {
+        const updatedCount = await cartitem.findOneAndUpdate(
+          { userId: userId, productId: productId, status: "Active" },
+          { $inc: { quantity: -1 } },
+          { new: true }
+        );
+
+        res.status(200).json({
+          status: 200,
+          message: "Quantity decremented",
+          data: null,
+        });
+      } else {
+        res.status(200).json({
+          status: 200,
+          message: "Quantity cannot be less than 1",
+          data: null,
+        });
+      }
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(200).json({
+      status: 200,
+      message: "Not into cart",
+      data: null,
+    });
   }
 });
 module.exports = router;
