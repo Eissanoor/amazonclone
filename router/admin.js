@@ -1706,6 +1706,41 @@ router.get("/get-allproducts-user", async (req, res) =>
     });
   }
 });
+router.get("/get-all-related-products-user", async (req, res) =>
+{
+  try {
+    const { _id, categoryId } = req.query;
+
+    const productData = await product.findById(_id);
+
+    if (!productData) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+        data: null
+      });
+    }
+
+    const relatedProducts = await product.find({
+      categoryId: productData.categoryId,
+      _id: { $ne: productData._id } // Exclude the current product
+    });
+
+    res.status(200).json({
+      status: 200,
+      message: "Related Products found",
+      data: relatedProducts
+    });
+
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Server Error",
+      data: null,
+    });
+  }
+});
 router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
 {
   try {
