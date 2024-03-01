@@ -1741,6 +1741,40 @@ router.get("/get-all-related-products-user", async (req, res) =>
     });
   }
 });
+router.get("/get-allproducts-search-user", async (req, res) =>
+{
+  try {
+    const page = parseInt(req.query.page) || 1;
+    const pageSize = parseInt(req.query.pageSize) || 10;
+    const productname = req.query.productname;
+
+    const skip = (page - 1) * pageSize;
+
+    let query = {};
+
+    if (productname) {
+      // If productName is provided in the query, create a query to match
+      query = { productname: { $regex: new RegExp(productname, "i") } };
+    }
+
+    const products = await product.find(query)
+      .skip(skip)
+      .limit(pageSize);
+
+    res.status(200).json({
+      status: 200,
+      message: "Products found",
+      data: products
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 400,
+      message: "Error: Invalid product ID",
+      data: null,
+    });
+  }
+});
 router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
 {
   try {
