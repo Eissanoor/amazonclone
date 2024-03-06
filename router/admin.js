@@ -1409,7 +1409,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
         const result = await cloudinary.uploader.upload(ManuImage);
         ManuImage = result.url;
       }
-      
+
       const MenuEmp = new product({
         productname: req.body.productname,
         status: status,
@@ -1621,15 +1621,16 @@ router.delete("/products/:id", async (req, res) =>
     }
 
     const image = deletedProduct.image;
-    const parts = image.split('/');
 
-    // Get the last part of the split array
-    const lastPart = parts[parts.length - 1];
-
-    // Split the last part by '.'
-    const publicId = lastPart.split('.')[0];
-    console.log(image);
     if (image) {
+      const parts = image.split('/');
+
+      // Get the last part of the split array
+      const lastPart = parts[parts.length - 1];
+
+      // Split the last part by '.'
+      const publicId = lastPart.split('.')[0];
+
       const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
       console.log(result);
     }
