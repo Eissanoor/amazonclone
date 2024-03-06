@@ -1409,7 +1409,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
         const result = await cloudinary.uploader.upload(ManuImage);
         ManuImage = result.url;
       }
-
+      
       const MenuEmp = new product({
         productname: req.body.productname,
         status: status,
@@ -1609,23 +1609,38 @@ router.put("/productsthumbnail/:id", upload.array("thumbnails", 8), async (req, 
 router.delete("/products/:id", async (req, res) =>
 {
   try {
-    const subcategoryId = req.params.id;
-    const deletedSubcategory = await product.findByIdAndDelete(subcategoryId);
-    if (deletedSubcategory) {
-      res.status(200).json({
-        status: 200,
-        message: "products deleted successfully",
-        data: deletedSubcategory,
-      });
-    } else {
-      res.status(404).json({
+    const productId = req.params.id;
+    const deletedProduct = await product.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).json({
         status: 404,
-        message: "products not found",
+        message: "Product not found",
         data: null,
       });
     }
+
+    const image = deletedProduct.image;
+    const parts = image.split('/');
+
+    // Get the last part of the split array
+    const lastPart = parts[parts.length - 1];
+
+    // Split the last part by '.'
+    const publicId = lastPart.split('.')[0];
+    console.log(image);
+    if (image) {
+      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      console.log(result);
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "Product deleted successfully",
+      data: deletedProduct,
+    });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     res.status(500).json({
       status: 500,
       message: "Internal Server Error",
