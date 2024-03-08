@@ -6,7 +6,7 @@ This is a full-stack web application project inspired by Amazon, built using Nod
 
 The project aims to replicate some of the core functionalities of the Amazon website, including user authentication, product listings, shopping cart management, and order processing.
 # Admin Side
-![image](https://github.com/Eissanoor/amazonclone/assets/86971746/b1966de4-83ed-46c4-ba45-fd49285e25b6)
+![image](https://github.com/Eissanoor/amazonclone/assets/86971746/bf19fe06-62d2-446b-9bbc-1b27c407d28f)
 ![image](https://github.com/Eissanoor/amazonclone/assets/86971746/81825253-6e53-4e85-a8a3-402bb546388e)
 ![image](https://github.com/Eissanoor/amazonclone/assets/86971746/4a706965-220b-4057-9e42-9705f9f18871)
 ![image](https://github.com/Eissanoor/amazonclone/assets/86971746/0173fa91-763f-4812-ab0d-e1d1f1a85634)
