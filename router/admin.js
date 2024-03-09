@@ -1182,7 +1182,7 @@ router.delete("/delete-category/:id", async (req, res) =>
     if (!deletecpu) {
       return res.status(404).json({
         status: 404,
-        message: "Product not found",
+        message: "category not found",
         data: null,
       });
     }
