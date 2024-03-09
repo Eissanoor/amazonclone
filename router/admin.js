@@ -1834,6 +1834,39 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
     });
   }
 });
+router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) =>
+{
+  try {
+    const categoryId = req.params.categoryId;
+
+    // Find all products in the specified category
+    const products = await product.find({ categoryId: categoryId });
+
+    // Get distinct values for brands, hardisk, cpu, and ram
+    const distinctBrands = await product.distinct("brands", { categoryId: categoryId });
+    const distinctHardisk = await product.distinct("hardisk", { categoryId: categoryId });
+    const distinctCpu = await product.distinct("cpu", { categoryId: categoryId });
+    const distinctRam = await product.distinct("ram", { categoryId: categoryId });
+
+    // Return the results
+    res.status(200).json({
+      status: 200,
+      message: "Products found",
+      brands: distinctBrands,
+      hardisk: distinctHardisk,
+      cpu: distinctCpu,
+      ram: distinctRam
+    });
+
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
 router.post("/user-signup", async (req, res) =>
 {
   let qdate = new Date();
@@ -2333,7 +2366,7 @@ router.put("/product-item-addtocart-quantity-dec", async (req, res) =>
 router.get("/get-allstate-user", async (req, res) =>
 {
   try {
-    
+
     const products = await state.find()
     res.status(200).json({
       status: 200,
