@@ -25,6 +25,7 @@ const product = require("../model/product")
 const userauth = require("../model/userauth")
 const emailvarify = require("../model/emailotp")
 const cartitem = require("../model/cartItem")
+const state = require("../model/state")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -2325,6 +2326,25 @@ router.put("/product-item-addtocart-quantity-dec", async (req, res) =>
     res.status(200).json({
       status: 200,
       message: "Not into cart",
+      data: null,
+    });
+  }
+});
+router.get("/get-allstate-user", async (req, res) =>
+{
+  try {
+    
+    const products = await state.find()
+    res.status(200).json({
+      status: 200,
+      message: "state found",
+      data: products
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 400,
+      message: "Error: Invalid state ID",
       data: null,
     });
   }
