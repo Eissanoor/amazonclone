@@ -15,7 +15,7 @@ const productschema = new mongoose.Schema(
         operatingsysytem: String,
         ram: String,
         asin: String,
-        description: String,
+        description: [{type:String}],
         price: Number,
         stock: Number,
         status: Number
