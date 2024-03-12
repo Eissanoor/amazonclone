@@ -2494,6 +2494,56 @@ router.put("/update-user-profile/:_id", upload.single("image"), async (req, res)
     });
   }
 });
+router.delete("/user_image/:id", async (req, res) =>
+{
+  try {
+    const productId = req.params.id;
+    const user = await userauth.findById(productId);
+
+    if (!user) {
+      return res.status(404).json({
+        status: 404,
+        message: "userauth not found",
+        data: null,
+      });
+    }
+
+    const image = user.image;
+
+    if (!image) {
+      return res.status(404).json({
+        status: 404,
+        message: "Image not found for userauth",
+        data: null,
+      });
+    }
+
+    const parts = image.split('/');
+    const lastPart = parts[parts.length - 1];
+    const publicId = lastPart.split('.')[0];
+
+    // Delete the image from Cloudinary
+    const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+    console.log(result);
+
+    // Remove the image field from the user document
+    user.image = undefined;
+    await user.save();
+
+    res.status(200).json({
+      status: 200,
+      message: "Image deleted successfully for userauth",
+      data: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
 router.post("/changePassword", async (req, res) =>
 {
   try {
