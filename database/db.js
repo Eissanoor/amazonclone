@@ -3,7 +3,7 @@ mongoose.Promise = global.Promise;
 var dotenv = require("dotenv");
 dotenv.config({ path: "./config.env" });
 var DATABASE = process.env.DATABASE;
-
+mongoose.set('strictQuery', false);
 const MONGODB_URL = DATABASE;
 mongoose
   .connect(MONGODB_URL, {

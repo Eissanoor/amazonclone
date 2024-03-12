@@ -26,6 +26,7 @@ const userauth = require("../model/userauth")
 const emailvarify = require("../model/emailotp")
 const cartitem = require("../model/cartItem")
 const state = require("../model/state")
+const slider = require("../model/slider")
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -1665,7 +1666,186 @@ router.delete("/products/:id", async (req, res) =>
     });
   }
 });
+router.post("/add-slider", upload.single("image"), async (req, res) =>
+{
+  try {
+    const status = req.body.status
+    
+      const file = req.file;
+      let ManuImage = null;
 
+      if (file) {
+        ManuImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
+
+        const result = await cloudinary.uploader.upload(ManuImage);
+        ManuImage = result.url;
+      }
+
+    const MenuEmp = new slider({
+
+        status: status,
+       
+        image: ManuImage,
+       
+      });
+      const menu = await MenuEmp.save();
+      res.status(201).json({
+        status: 201,
+        message: "slider has been Added",
+        data: MenuEmp,
+      });
+    
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Required parameter is missing",
+      data: null,
+    });
+  }
+});
+router.get("/slider/:id", async (req, res) =>
+{
+  try {
+    const productsID = req.params.id;
+    const subcategory = await slider.findById(productsID);
+    if (subcategory) {
+      res.status(200).json({
+        status: 200,
+        message: "slider found",
+        data: subcategory,
+      });
+    } else {
+      res.status(404).json({
+        status: 404,
+        message: "slider not found",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.get("/get-allslider", async (req, res) =>
+{
+  try {
+
+
+    const brand = await slider.find();
+
+    res.status(200).json({
+      status: 200,
+      message: "slider found",
+      data: brand,
+    });
+  } catch (e) {
+    console.log(e);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid products ID",
+      data: null,
+    });
+  }
+});
+router.put("/slider/:id", upload.single("image"), async (req, res) =>
+{
+  try {
+    const productId = req.params.id;
+    const {  status} = req.body;
+
+
+    
+
+    const existingProduct = await slider.findById(productId);
+    if (!existingProduct) {
+      return res.status(404).json({
+        status: 404,
+        message: "slider not found",
+        data: null,
+      });
+    }
+
+
+    let ManuImage = null;
+    if (req.file) {
+
+      ManuImage = `data:image/png;base64,${req.file.buffer.toString("base64")}`;
+      const result = await cloudinary.uploader.upload(ManuImage);
+      ManuImage = result.url;
+    } else {
+
+      ManuImage = existingProduct.image;
+    }
+
+
+   
+    existingProduct.status = status;
+    existingProduct.image = ManuImage;
+
+
+    const updatedProduct = await existingProduct.save();
+    res.status(200).json({
+      status: 200,
+      message: "slider updated successfully",
+      data: updatedProduct,
+    });
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
+router.delete("/slider/:id", async (req, res) =>
+{
+  try {
+    const productId = req.params.id;
+    const deletedProduct = await slider.findByIdAndDelete(productId);
+
+    if (!deletedProduct) {
+      return res.status(404).json({
+        status: 404,
+        message: "Product not found",
+        data: null,
+      });
+    }
+
+    const image = deletedProduct.image;
+
+    if (image) {
+      const parts = image.split('/');
+
+      // Get the last part of the split array
+      const lastPart = parts[parts.length - 1];
+
+      // Split the last part by '.'
+      const publicId = lastPart.split('.')[0];
+
+      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      console.log(result);
+    }
+
+    res.status(200).json({
+      status: 200,
+      message: "slider deleted successfully",
+      data: null,
+    });
+  } catch (error) {
+    console.error(error);
+    res.status(500).json({
+      status: 500,
+      message: "Internal Server Error",
+      data: null,
+    });
+  }
+});
 //--------------------------------USERS-SIDE---------------------------------------
 router.get("/get-category-user", async (req, res) =>
 {
