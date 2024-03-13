@@ -2476,7 +2476,7 @@ router.put("/update-user-profile/:_id", upload.single("image"), async (req, res)
       return res.status(404).json({
         status: 404,
         message: "user not found",
-        data: null,
+        data: updatedUser,
       });
     }
 
