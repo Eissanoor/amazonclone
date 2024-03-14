@@ -2322,14 +2322,7 @@ router.post("/user-Login", async (req, res) =>
       res.status(200).json({
         status: 200,
         message: "Login Successfully",
-        data: {
-          _id: useremail._id,
-          isVerified: useremail.isVarified,
-          isNewUser: useremail.isNewUser,
-          name: useremail.name,
-          email: useremail.email,
-          accessToken: token,
-        },
+        data: getmens
       });
     } else {
       res
