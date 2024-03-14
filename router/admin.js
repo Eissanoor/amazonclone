@@ -2528,12 +2528,12 @@ router.delete("/user_image/:id", async (req, res) =>
 
     // Remove the image field from the user document
     user.image = undefined;
-    await user.save();
+    const deleteimage = await user.save();
 
     res.status(200).json({
       status: 200,
       message: "Image deleted successfully for userauth",
-      data: null,
+      data: deleteimage,
     });
   } catch (error) {
     console.error(error);
