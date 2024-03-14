@@ -2786,4 +2786,51 @@ router.get("/get-allstate-user", async (req, res) =>
     });
   }
 });
+router.put("/user-changePassword", async (req, res) =>
+{
+  try {
+    const email = req.body.email;
+    const mailVarify = await userauth.findOne({ email: email });
+
+    if (mailVarify) {
+      const oldPassword = req.body.oldPassword;
+      const newPassword = req.body.newPassword;
+
+      // Check if the provided old password matches the one in the database
+      const isMatch = await bcrypt.compare(oldPassword, mailVarify.password);
+
+      if (isMatch) {
+        // If old password is correct, update the password with the new one
+        mailVarify.password = newPassword;
+        const updatedUser = await mailVarify.save();
+
+        res.status(201).json({
+          status: 201,
+          message: "Password change successful",
+          data: updatedUser,
+        });
+      } else {
+        // If old password is incorrect, send an error message
+        res.status(400).json({
+          status: 400,
+          message: "Old password is incorrect",
+          data: null,
+        });
+      }
+    } else {
+      res.status(400).json({
+        status: 400,
+        message: "Email does not exist",
+        data: null,
+      });
+    }
+  } catch (error) {
+    console.log(error);
+    res.status(400).json({
+      status: 400,
+      message: "Invalid OTP",
+      data: null,
+    });
+  }
+});
 module.exports = router;
