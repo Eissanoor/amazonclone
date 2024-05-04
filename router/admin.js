@@ -2096,13 +2096,13 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
     if (products) {
       res.status(200).json({
         status: 200,
-        message: "product found",
+        message: "Products found",
         data: products,
       });
     } else {
       res.status(404).json({
         status: 404,
-        message: "product not found",
+        message: "No product found",
         data: null,
       });
     }
