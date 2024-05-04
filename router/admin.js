@@ -6,28 +6,28 @@ const nodemailer = require("nodemailer");
 const validator = require("validator");
 const cron = require("node-cron");
 const path = require("path");
-const slugify = require('slugify');
+const slugify = require("slugify");
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const cookieparser = require("cookie-parser");
 const multer = require("multer");
 const auth = require("../middleware/auth");
 const adminauth = require("../model/adminauth");
-const brands = require("../model/brands")
-const hardisk = require("../model/hardisk")
-const operatingsystem = require("../model/operationSystem")
-const ram = require("../model/ram")
-const cpu = require("../model/cpu")
-const asin = require("../model/asin")
-const category = require("../model/category")
-const subcategory = require("../model/subcategory")
-const product = require("../model/product")
-const userauth = require("../model/userauth")
-const emailvarify = require("../model/emailotp")
-const cartitem = require("../model/cartItem")
-const state = require("../model/state")
-const slider = require("../model/slider")
-const banner = require("../model/banner")
+const brands = require("../model/brands");
+const hardisk = require("../model/hardisk");
+const operatingsystem = require("../model/operationSystem");
+const ram = require("../model/ram");
+const cpu = require("../model/cpu");
+const asin = require("../model/asin");
+const category = require("../model/category");
+const subcategory = require("../model/subcategory");
+const product = require("../model/product");
+const userauth = require("../model/userauth");
+const emailvarify = require("../model/emailotp");
+const cartitem = require("../model/cartItem");
+const state = require("../model/state");
+const slider = require("../model/slider");
+const banner = require("../model/banner");
 const { profile } = require("console");
 const cloudinary = require("cloudinary").v2;
 const cors = require("cors");
@@ -58,16 +58,14 @@ const upload = multer({ storage: storage });
 router.use("/ProfileImage", express.static("public/upload"));
 router.use("/image", express.static("public/upload"));
 router.use("/categoryThumbnail", express.static("public/upload"));
-router.get("/", (req, res) =>
-{
+router.get("/", (req, res) => {
   res.status(201).json({
     status: 201,
     message: "server is running",
     data: null,
   });
-})
-router.post("/adminsignup", async (req, res) =>
-{
+});
+router.post("/adminsignup", async (req, res) => {
   let qdate = new Date();
   let date = qdate.toDateString();
   let Id = Math.floor(Math.random() * 10000000) + 1;
@@ -104,8 +102,7 @@ router.post("/adminsignup", async (req, res) =>
     res.status(400).json({ status: 400, message: "not found", data: null });
   }
 });
-router.post("/adminLogin", async (req, res) =>
-{
+router.post("/adminLogin", async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -148,18 +145,15 @@ router.post("/adminLogin", async (req, res) =>
     res.status(400).json({ status: 400, message: "invalid email", data: null });
   }
 });
-router.post("/add-brands", async (req, res) =>
-{
+router.post("/add-brands", async (req, res) => {
   try {
     const brandname = req.body.brandname;
-    const status = req.body.status
+    const status = req.body.status;
     const itemNameexist = await brands.findOne({ brandname: brandname });
     if (!itemNameexist) {
-
-
       const MenuEmp = new brands({
         brandname: req.body.brandname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -183,11 +177,8 @@ router.post("/add-brands", async (req, res) =>
     });
   }
 });
-router.get("/get-brand", async (req, res) =>
-{
+router.get("/get-brand", async (req, res) => {
   try {
-
-
     const brand = await brands.find();
 
     res.status(200).json({
@@ -204,8 +195,7 @@ router.get("/get-brand", async (req, res) =>
     });
   }
 });
-router.get("/get-brandbyid/:id", async (req, res) =>
-{
+router.get("/get-brandbyid/:id", async (req, res) => {
   try {
     const brandId = req.params.id;
 
@@ -233,8 +223,7 @@ router.get("/get-brandbyid/:id", async (req, res) =>
     });
   }
 });
-router.put("/update-brand/:id", async (req, res) =>
-{
+router.put("/update-brand/:id", async (req, res) => {
   try {
     const brandId = req.params.id;
     const { brandname, status } = req.body;
@@ -268,8 +257,7 @@ router.put("/update-brand/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-brand/:id", async (req, res) =>
-{
+router.delete("/delete-brand/:id", async (req, res) => {
   try {
     const brandId = req.params.id;
 
@@ -297,18 +285,15 @@ router.delete("/delete-brand/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-hardisk", async (req, res) =>
-{
+router.post("/add-hardisk", async (req, res) => {
   try {
     const hardiskname = req.body.hardiskname;
-    const status = req.body.status
+    const status = req.body.status;
     const itemNameexist = await hardisk.findOne({ hardiskname: hardiskname });
     if (!itemNameexist) {
-
-
       const MenuEmp = new hardisk({
         hardiskname: req.body.hardiskname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -332,8 +317,7 @@ router.post("/add-hardisk", async (req, res) =>
     });
   }
 });
-router.get("/get-hardiskbyid/:id", async (req, res) =>
-{
+router.get("/get-hardiskbyid/:id", async (req, res) => {
   try {
     const hardiskID = req.params.id;
 
@@ -361,11 +345,8 @@ router.get("/get-hardiskbyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-hardisk", async (req, res) =>
-{
+router.get("/get-hardisk", async (req, res) => {
   try {
-
-
     const brand = await hardisk.find();
 
     res.status(200).json({
@@ -382,8 +363,7 @@ router.get("/get-hardisk", async (req, res) =>
     });
   }
 });
-router.put("/update-hardisk/:id", async (req, res) =>
-{
+router.put("/update-hardisk/:id", async (req, res) => {
   try {
     const hardiskID = req.params.id;
     const { hardiskname, status } = req.body;
@@ -416,8 +396,7 @@ router.put("/update-hardisk/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-hardisk/:id", async (req, res) =>
-{
+router.delete("/delete-hardisk/:id", async (req, res) => {
   try {
     const hardiskID = req.params.id;
 
@@ -445,18 +424,15 @@ router.delete("/delete-hardisk/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-cpu", async (req, res) =>
-{
+router.post("/add-cpu", async (req, res) => {
   try {
     const cpuname = req.body.cpuname;
-    const status = req.body.status
+    const status = req.body.status;
     const itemNameexist = await cpu.findOne({ cpuname: cpuname });
     if (!itemNameexist) {
-
-
       const MenuEmp = new cpu({
         cpuname: req.body.cpuname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -480,8 +456,7 @@ router.post("/add-cpu", async (req, res) =>
     });
   }
 });
-router.get("/get-cpubyid/:id", async (req, res) =>
-{
+router.get("/get-cpubyid/:id", async (req, res) => {
   try {
     const cpuID = req.params.id;
 
@@ -509,11 +484,8 @@ router.get("/get-cpubyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-cpu", async (req, res) =>
-{
+router.get("/get-cpu", async (req, res) => {
   try {
-
-
     const brand = await cpu.find();
 
     res.status(200).json({
@@ -530,8 +502,7 @@ router.get("/get-cpu", async (req, res) =>
     });
   }
 });
-router.put("/update-cpu/:id", async (req, res) =>
-{
+router.put("/update-cpu/:id", async (req, res) => {
   try {
     const cpuID = req.params.id;
     const { cpuname, status } = req.body;
@@ -564,8 +535,7 @@ router.put("/update-cpu/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-cpu/:id", async (req, res) =>
-{
+router.delete("/delete-cpu/:id", async (req, res) => {
   try {
     const cpuID = req.params.id;
 
@@ -593,18 +563,17 @@ router.delete("/delete-cpu/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-operating", async (req, res) =>
-{
+router.post("/add-operating", async (req, res) => {
   try {
     const operatingname = req.body.operatingname;
-    const status = req.body.status
-    const itemNameexist = await operatingsystem.findOne({ operatingname: operatingname });
+    const status = req.body.status;
+    const itemNameexist = await operatingsystem.findOne({
+      operatingname: operatingname,
+    });
     if (!itemNameexist) {
-
-
       const MenuEmp = new operatingsystem({
         operatingname: req.body.operatingname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -628,8 +597,7 @@ router.post("/add-operating", async (req, res) =>
     });
   }
 });
-router.get("/get-operatingbyid/:id", async (req, res) =>
-{
+router.get("/get-operatingbyid/:id", async (req, res) => {
   try {
     const operatingID = req.params.id;
 
@@ -657,11 +625,8 @@ router.get("/get-operatingbyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-operating", async (req, res) =>
-{
+router.get("/get-operating", async (req, res) => {
   try {
-
-
     const brand = await operatingsystem.find();
 
     res.status(200).json({
@@ -678,15 +643,15 @@ router.get("/get-operating", async (req, res) =>
     });
   }
 });
-router.put("/update-operating/:id", async (req, res) =>
-{
+router.put("/update-operating/:id", async (req, res) => {
   try {
     const operatingID = req.params.id;
     const { operatingname, status } = req.body;
 
     const existingBrand = await operatingsystem.findOne({ _id: operatingID });
     if (existingBrand) {
-      existingBrand.operatingname = operatingname || existingBrand.operatingname;
+      existingBrand.operatingname =
+        operatingname || existingBrand.operatingname;
       existingBrand.status = status || existingBrand.status;
 
       await existingBrand.save();
@@ -712,8 +677,7 @@ router.put("/update-operating/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-operating/:id", async (req, res) =>
-{
+router.delete("/delete-operating/:id", async (req, res) => {
   try {
     const operatingID = req.params.id;
 
@@ -741,18 +705,15 @@ router.delete("/delete-operating/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-ram", async (req, res) =>
-{
+router.post("/add-ram", async (req, res) => {
   try {
     const ramname = req.body.ramname;
-    const status = req.body.status
+    const status = req.body.status;
     const itemNameexist = await ram.findOne({ ramname: ramname });
     if (!itemNameexist) {
-
-
       const MenuEmp = new ram({
         ramname: req.body.ramname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -776,8 +737,7 @@ router.post("/add-ram", async (req, res) =>
     });
   }
 });
-router.get("/get-rambyid/:id", async (req, res) =>
-{
+router.get("/get-rambyid/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
 
@@ -805,11 +765,8 @@ router.get("/get-rambyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-ram", async (req, res) =>
-{
+router.get("/get-ram", async (req, res) => {
   try {
-
-
     const brand = await ram.find();
 
     res.status(200).json({
@@ -826,8 +783,7 @@ router.get("/get-ram", async (req, res) =>
     });
   }
 });
-router.put("/update-ram/:id", async (req, res) =>
-{
+router.put("/update-ram/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
     const { ramname, status } = req.body;
@@ -860,8 +816,7 @@ router.put("/update-ram/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-ram/:id", async (req, res) =>
-{
+router.delete("/delete-ram/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
 
@@ -889,18 +844,15 @@ router.delete("/delete-ram/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-asin", async (req, res) =>
-{
+router.post("/add-asin", async (req, res) => {
   try {
     const asinname = req.body.asinname;
-    const status = req.body.status
+    const status = req.body.status;
     const itemNameexist = await asin.findOne({ asinname: asinname });
     if (!itemNameexist) {
-
-
       const MenuEmp = new asin({
         asinname: req.body.asinname,
-        status: status
+        status: status,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -924,8 +876,7 @@ router.post("/add-asin", async (req, res) =>
     });
   }
 });
-router.get("/get-asinbyid/:id", async (req, res) =>
-{
+router.get("/get-asinbyid/:id", async (req, res) => {
   try {
     const asimID = req.params.id;
 
@@ -953,11 +904,8 @@ router.get("/get-asinbyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-asin", async (req, res) =>
-{
+router.get("/get-asin", async (req, res) => {
   try {
-
-
     const brand = await asin.find();
 
     res.status(200).json({
@@ -974,8 +922,7 @@ router.get("/get-asin", async (req, res) =>
     });
   }
 });
-router.put("/update-asin/:id", async (req, res) =>
-{
+router.put("/update-asin/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
     const { asinname, status } = req.body;
@@ -1008,8 +955,7 @@ router.put("/update-asin/:id", async (req, res) =>
     });
   }
 });
-router.delete("/delete-asin/:id", async (req, res) =>
-{
+router.delete("/delete-asin/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
 
@@ -1037,12 +983,13 @@ router.delete("/delete-asin/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-category", upload.single("image"), async (req, res) =>
-{
+router.post("/add-category", upload.single("image"), async (req, res) => {
   try {
     const categoryname = req.body.categoryname;
-    const status = req.body.status
-    const itemNameexist = await category.findOne({ categoryname: categoryname });
+    const status = req.body.status;
+    const itemNameexist = await category.findOne({
+      categoryname: categoryname,
+    });
     if (!itemNameexist) {
       const file = req.file;
       let ManuImage = null;
@@ -1057,7 +1004,7 @@ router.post("/add-category", upload.single("image"), async (req, res) =>
       const MenuEmp = new category({
         categoryname: req.body.categoryname,
         status: status,
-        image: ManuImage
+        image: ManuImage,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -1081,8 +1028,7 @@ router.post("/add-category", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.get("/get-categorybyid/:id", async (req, res) =>
-{
+router.get("/get-categorybyid/:id", async (req, res) => {
   try {
     const asimID = req.params.id;
 
@@ -1110,11 +1056,8 @@ router.get("/get-categorybyid/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-category", async (req, res) =>
-{
+router.get("/get-category", async (req, res) => {
   try {
-
-
     const brand = await category.find();
 
     res.status(200).json({
@@ -1131,15 +1074,13 @@ router.get("/get-category", async (req, res) =>
     });
   }
 });
-router.put("/update-category/:id", upload.single("image"), async (req, res) =>
-{
+router.put("/update-category/:id", upload.single("image"), async (req, res) => {
   try {
     const ramID = req.params.id;
     const { categoryname, status, image } = req.body;
 
     const existingBrand = await category.findOne({ _id: ramID });
     if (existingBrand) {
-
       const file = req.file;
 
       // Check if a file is uploaded
@@ -1150,7 +1091,8 @@ router.put("/update-category/:id", upload.single("image"), async (req, res) =>
         ManuImage = result.url;
       }
       existingBrand.categoryname = categoryname || existingBrand.categoryname;
-      existingBrand.status = status || existingBrand.status; existingBrand.image = ManuImage || existingBrand.image;
+      existingBrand.status = status || existingBrand.status;
+      existingBrand.image = ManuImage || existingBrand.image;
 
       await existingBrand.save();
 
@@ -1175,8 +1117,7 @@ router.put("/update-category/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.delete("/delete-category/:id", async (req, res) =>
-{
+router.delete("/delete-category/:id", async (req, res) => {
   try {
     const ramID = req.params.id;
 
@@ -1193,15 +1134,17 @@ router.delete("/delete-category/:id", async (req, res) =>
     const image = deletecpu.image;
 
     if (image) {
-      const parts = image.split('/');
+      const parts = image.split("/");
 
       // Get the last part of the split array
       const lastPart = parts[parts.length - 1];
 
       // Split the last part by '.'
-      const publicId = lastPart.split('.')[0];
+      const publicId = lastPart.split(".")[0];
 
-      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+      });
       console.log(result);
     }
 
@@ -1219,13 +1162,14 @@ router.delete("/delete-category/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-subcategory", upload.single("image"), async (req, res) =>
-{
+router.post("/add-subcategory", upload.single("image"), async (req, res) => {
   try {
     const subcategoryname = req.body.subcategoryname;
-    const status = req.body.status
-    const categoryId = req.body.categoryId
-    const itemNameexist = await subcategory.findOne({ subcategoryname: subcategoryname });
+    const status = req.body.status;
+    const categoryId = req.body.categoryId;
+    const itemNameexist = await subcategory.findOne({
+      subcategoryname: subcategoryname,
+    });
     if (!itemNameexist) {
       const file = req.file;
       let ManuImage = null;
@@ -1241,7 +1185,7 @@ router.post("/add-subcategory", upload.single("image"), async (req, res) =>
         subcategoryname: req.body.subcategoryname,
         status: status,
         categoryId: categoryId,
-        image: ManuImage
+        image: ManuImage,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -1265,8 +1209,7 @@ router.post("/add-subcategory", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.get("/subcategory/:id", async (req, res) =>
-{
+router.get("/subcategory/:id", async (req, res) => {
   try {
     const subcategoryId = req.params.id;
     const subcategory1 = await subcategory.findById(subcategoryId);
@@ -1292,11 +1235,8 @@ router.get("/subcategory/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-subcategory", async (req, res) =>
-{
+router.get("/get-subcategory", async (req, res) => {
   try {
-
-
     const brand = await subcategory.find();
 
     res.status(200).json({
@@ -1313,8 +1253,7 @@ router.get("/get-subcategory", async (req, res) =>
     });
   }
 });
-router.put("/subcategory/:id", upload.single("image"), async (req, res) =>
-{
+router.put("/subcategory/:id", upload.single("image"), async (req, res) => {
   try {
     const subcategoryId = req.params.id;
     const { subcategoryname, status, categoryId } = req.body;
@@ -1369,11 +1308,12 @@ router.put("/subcategory/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.delete("/subcategory/:id", async (req, res) =>
-{
+router.delete("/subcategory/:id", async (req, res) => {
   try {
     const subcategoryId = req.params.id;
-    const deletedSubcategory = await subcategory.findByIdAndDelete(subcategoryId);
+    const deletedSubcategory = await subcategory.findByIdAndDelete(
+      subcategoryId
+    );
     if (deletedSubcategory) {
       res.status(200).json({
         status: 200,
@@ -1396,26 +1336,25 @@ router.delete("/subcategory/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-products", upload.single("image"), async (req, res) =>
-{
+router.post("/add-products", upload.single("image"), async (req, res) => {
   try {
     const productname = req.body.productname;
-    const status = req.body.status
-    const subcategoryId = req.body.categoryId
-    const slug1 = req.body.slug
+    const status = req.body.status;
+    const subcategoryId = req.body.categoryId;
+    const slug1 = req.body.slug;
     const slug = slugify(slug1, {
-      replacement: '-',  // replace spaces with -
-      lower: true       // convert to lower case
+      replacement: "-", // replace spaces with -
+      lower: true, // convert to lower case
     });
-    const brands = req.body.brands
-    const hardisk = req.body.hardisk
-    const cpu = req.body.cpu
-    const operatingsysytem = req.body.operatingsysytem
-    const ram = req.body.ram
-    const asin = req.body.asin
-    const description = req.body.description
-    const price = req.body.price
-    const stock = req.body.stock
+    const brands = req.body.brands;
+    const hardisk = req.body.hardisk;
+    const cpu = req.body.cpu;
+    const operatingsysytem = req.body.operatingsysytem;
+    const ram = req.body.ram;
+    const asin = req.body.asin;
+    const description = req.body.description;
+    const price = req.body.price;
+    const stock = req.body.stock;
     const itemNameexist = await product.findOne({ productname: productname });
     if (!itemNameexist) {
       const file = req.file;
@@ -1442,7 +1381,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
         asin: asin,
         description: description,
         price: price,
-        stock: stock
+        stock: stock,
       });
       const menu = await MenuEmp.save();
       res.status(201).json({
@@ -1466,8 +1405,7 @@ router.post("/add-products", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.get("/products/:id", async (req, res) =>
-{
+router.get("/products/:id", async (req, res) => {
   try {
     const productsID = req.params.id;
     const subcategory = await product.findById(productsID);
@@ -1493,11 +1431,8 @@ router.get("/products/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-products", async (req, res) =>
-{
+router.get("/get-products", async (req, res) => {
   try {
-
-
     const brand = await product.find();
 
     res.status(200).json({
@@ -1514,18 +1449,29 @@ router.get("/get-products", async (req, res) =>
     });
   }
 });
-router.put("/products/:id", upload.single("image"), async (req, res) =>
-{
+router.put("/products/:id", upload.single("image"), async (req, res) => {
   try {
     const productId = req.params.id;
-    const { productname, status, subcategoryId, slug: slug1, brands, hardisk, cpu, operatingsysytem, ram, asin, description, price, stock } = req.body;
-
+    const {
+      productname,
+      status,
+      subcategoryId,
+      slug: slug1,
+      brands,
+      hardisk,
+      cpu,
+      operatingsysytem,
+      ram,
+      asin,
+      description,
+      price,
+      stock,
+    } = req.body;
 
     const slug = slugify(slug1, {
-      replacement: '-',
-      lower: true
+      replacement: "-",
+      lower: true,
     });
-
 
     const existingProduct = await product.findById(productId);
     if (!existingProduct) {
@@ -1536,18 +1482,14 @@ router.put("/products/:id", upload.single("image"), async (req, res) =>
       });
     }
 
-
     let ManuImage = null;
     if (req.file) {
-
       ManuImage = `data:image/png;base64,${req.file.buffer.toString("base64")}`;
       const result = await cloudinary.uploader.upload(ManuImage);
       ManuImage = result.url;
     } else {
-
       ManuImage = existingProduct.image;
     }
-
 
     existingProduct.productname = productname;
     existingProduct.status = status;
@@ -1564,7 +1506,6 @@ router.put("/products/:id", upload.single("image"), async (req, res) =>
     existingProduct.stock = stock;
     existingProduct.image = ManuImage;
 
-
     const updatedProduct = await existingProduct.save();
     res.status(200).json({
       status: 200,
@@ -1580,52 +1521,57 @@ router.put("/products/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.put("/productsthumbnail/:id", upload.array("thumbnails", 8), async (req, res) =>
-{
-  try {
-    const productId = req.params.id;
-    const existingProduct = await product.findById(productId);
-    if (!existingProduct) {
-      return res.status(404).json({
-        status: 404,
-        message: "Product not found",
+router.put(
+  "/productsthumbnail/:id",
+  upload.array("thumbnails", 8),
+  async (req, res) => {
+    try {
+      const productId = req.params.id;
+      const existingProduct = await product.findById(productId);
+      if (!existingProduct) {
+        return res.status(404).json({
+          status: 404,
+          message: "Product not found",
+          data: null,
+        });
+      }
+
+      let newThumbnails = [];
+
+      if (req.files && req.files.length > 0) {
+        for (let file of req.files) {
+          const thumbnailImage = `data:image/png;base64,${file.buffer.toString(
+            "base64"
+          )}`;
+          const result = await cloudinary.uploader.upload(thumbnailImage);
+          newThumbnails.push(result.url);
+        }
+      }
+
+      // Concatenate existing thumbnails with new thumbnails
+      const updatedThumbnails =
+        existingProduct.thumbnails.concat(newThumbnails);
+
+      // Update product's thumbnails
+      existingProduct.thumbnails = updatedThumbnails;
+
+      const updatedProduct = await existingProduct.save();
+      res.status(200).json({
+        status: 200,
+        message: "Product thumbnails updated successfully",
+        data: updatedProduct,
+      });
+    } catch (error) {
+      console.log(error);
+      res.status(500).json({
+        status: 500,
+        message: "Internal Server Error",
         data: null,
       });
     }
-
-    let newThumbnails = [];
-
-    if (req.files && req.files.length > 0) {
-      for (let file of req.files) {
-        const thumbnailImage = `data:image/png;base64,${file.buffer.toString("base64")}`;
-        const result = await cloudinary.uploader.upload(thumbnailImage);
-        newThumbnails.push(result.url);
-      }
-    }
-
-    // Concatenate existing thumbnails with new thumbnails
-    const updatedThumbnails = existingProduct.thumbnails.concat(newThumbnails);
-
-    // Update product's thumbnails
-    existingProduct.thumbnails = updatedThumbnails;
-
-    const updatedProduct = await existingProduct.save();
-    res.status(200).json({
-      status: 200,
-      message: "Product thumbnails updated successfully",
-      data: updatedProduct,
-    });
-  } catch (error) {
-    console.log(error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
-      data: null,
-    });
   }
-});
-router.delete("/products/:id", async (req, res) =>
-{
+);
+router.delete("/products/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     const deletedProduct = await product.findByIdAndDelete(productId);
@@ -1641,15 +1587,17 @@ router.delete("/products/:id", async (req, res) =>
     const image = deletedProduct.image;
 
     if (image) {
-      const parts = image.split('/');
+      const parts = image.split("/");
 
       // Get the last part of the split array
       const lastPart = parts[parts.length - 1];
 
       // Split the last part by '.'
-      const publicId = lastPart.split('.')[0];
+      const publicId = lastPart.split(".")[0];
 
-      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+      });
       console.log(result);
     }
 
@@ -1667,10 +1615,9 @@ router.delete("/products/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-slider", upload.single("image"), async (req, res) =>
-{
+router.post("/add-slider", upload.single("image"), async (req, res) => {
   try {
-    const status = req.body.status
+    const status = req.body.status;
 
     const file = req.file;
     let ManuImage = null;
@@ -1683,11 +1630,9 @@ router.post("/add-slider", upload.single("image"), async (req, res) =>
     }
 
     const MenuEmp = new slider({
-
       status: status,
 
       image: ManuImage,
-
     });
     const menu = await MenuEmp.save();
     res.status(201).json({
@@ -1695,7 +1640,6 @@ router.post("/add-slider", upload.single("image"), async (req, res) =>
       message: "slider has been Added",
       data: MenuEmp,
     });
-
   } catch (e) {
     console.log(e);
     res.status(400).json({
@@ -1705,8 +1649,7 @@ router.post("/add-slider", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.get("/slider/:id", async (req, res) =>
-{
+router.get("/slider/:id", async (req, res) => {
   try {
     const productsID = req.params.id;
     const subcategory = await slider.findById(productsID);
@@ -1732,11 +1675,8 @@ router.get("/slider/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-allslider", async (req, res) =>
-{
+router.get("/get-allslider", async (req, res) => {
   try {
-
-
     const brand = await slider.find();
 
     res.status(200).json({
@@ -1753,14 +1693,10 @@ router.get("/get-allslider", async (req, res) =>
     });
   }
 });
-router.put("/slider/:id", upload.single("image"), async (req, res) =>
-{
+router.put("/slider/:id", upload.single("image"), async (req, res) => {
   try {
     const productId = req.params.id;
     const { status } = req.body;
-
-
-
 
     const existingProduct = await slider.findById(productId);
     if (!existingProduct) {
@@ -1771,23 +1707,17 @@ router.put("/slider/:id", upload.single("image"), async (req, res) =>
       });
     }
 
-
     let ManuImage = null;
     if (req.file) {
-
       ManuImage = `data:image/png;base64,${req.file.buffer.toString("base64")}`;
       const result = await cloudinary.uploader.upload(ManuImage);
       ManuImage = result.url;
     } else {
-
       ManuImage = existingProduct.image;
     }
 
-
-
     existingProduct.status = status;
     existingProduct.image = ManuImage;
-
 
     const updatedProduct = await existingProduct.save();
     res.status(200).json({
@@ -1804,8 +1734,7 @@ router.put("/slider/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.delete("/slider/:id", async (req, res) =>
-{
+router.delete("/slider/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     const deletedProduct = await slider.findByIdAndDelete(productId);
@@ -1821,15 +1750,17 @@ router.delete("/slider/:id", async (req, res) =>
     const image = deletedProduct.image;
 
     if (image) {
-      const parts = image.split('/');
+      const parts = image.split("/");
 
       // Get the last part of the split array
       const lastPart = parts[parts.length - 1];
 
       // Split the last part by '.'
-      const publicId = lastPart.split('.')[0];
+      const publicId = lastPart.split(".")[0];
 
-      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+      });
       console.log(result);
     }
 
@@ -1847,10 +1778,9 @@ router.delete("/slider/:id", async (req, res) =>
     });
   }
 });
-router.post("/add-banner", upload.single("image"), async (req, res) =>
-{
+router.post("/add-banner", upload.single("image"), async (req, res) => {
   try {
-    const status = req.body.status
+    const status = req.body.status;
 
     const file = req.file;
     let ManuImage = null;
@@ -1863,11 +1793,9 @@ router.post("/add-banner", upload.single("image"), async (req, res) =>
     }
 
     const MenuEmp = new banner({
-
       status: status,
 
       image: ManuImage,
-
     });
     const menu = await MenuEmp.save();
     res.status(201).json({
@@ -1875,7 +1803,6 @@ router.post("/add-banner", upload.single("image"), async (req, res) =>
       message: "banner has been Added",
       data: MenuEmp,
     });
-
   } catch (e) {
     console.log(e);
     res.status(400).json({
@@ -1885,8 +1812,7 @@ router.post("/add-banner", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.get("/banner/:id", async (req, res) =>
-{
+router.get("/banner/:id", async (req, res) => {
   try {
     const productsID = req.params.id;
     const subcategory = await banner.findById(productsID);
@@ -1912,11 +1838,8 @@ router.get("/banner/:id", async (req, res) =>
     });
   }
 });
-router.get("/get-allbanner", async (req, res) =>
-{
+router.get("/get-allbanner", async (req, res) => {
   try {
-
-
     const brand = await banner.find();
 
     res.status(200).json({
@@ -1933,14 +1856,10 @@ router.get("/get-allbanner", async (req, res) =>
     });
   }
 });
-router.put("/banner/:id", upload.single("image"), async (req, res) =>
-{
+router.put("/banner/:id", upload.single("image"), async (req, res) => {
   try {
     const productId = req.params.id;
     const { status } = req.body;
-
-
-
 
     const existingProduct = await banner.findById(productId);
     if (!existingProduct) {
@@ -1951,23 +1870,17 @@ router.put("/banner/:id", upload.single("image"), async (req, res) =>
       });
     }
 
-
     let ManuImage = null;
     if (req.file) {
-
       ManuImage = `data:image/png;base64,${req.file.buffer.toString("base64")}`;
       const result = await cloudinary.uploader.upload(ManuImage);
       ManuImage = result.url;
     } else {
-
       ManuImage = existingProduct.image;
     }
 
-
-
     existingProduct.status = status;
     existingProduct.image = ManuImage;
-
 
     const updatedProduct = await existingProduct.save();
     res.status(200).json({
@@ -1984,8 +1897,7 @@ router.put("/banner/:id", upload.single("image"), async (req, res) =>
     });
   }
 });
-router.delete("/banner/:id", async (req, res) =>
-{
+router.delete("/banner/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     const deletedProduct = await banner.findByIdAndDelete(productId);
@@ -2001,15 +1913,17 @@ router.delete("/banner/:id", async (req, res) =>
     const image = deletedProduct.image;
 
     if (image) {
-      const parts = image.split('/');
+      const parts = image.split("/");
 
       // Get the last part of the split array
       const lastPart = parts[parts.length - 1];
 
       // Split the last part by '.'
-      const publicId = lastPart.split('.')[0];
+      const publicId = lastPart.split(".")[0];
 
-      const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+      const result = await cloudinary.uploader.destroy(publicId, {
+        resource_type: "image",
+      });
       console.log(result);
     }
 
@@ -2028,11 +1942,8 @@ router.delete("/banner/:id", async (req, res) =>
   }
 });
 //--------------------------------USERS-SIDE---------------------------------------
-router.get("/get-category-user", async (req, res) =>
-{
+router.get("/get-category-user", async (req, res) => {
   try {
-
-
     const brand = await category.find();
 
     res.status(200).json({
@@ -2049,20 +1960,19 @@ router.get("/get-category-user", async (req, res) =>
     });
   }
 });
-router.get("/get-products-user", async (req, res) =>
-{
+router.get("/get-products-user", async (req, res) => {
   try {
     const products = await product.find().populate({
-      path: 'categoryId',
+      path: "categoryId",
       populate: {
-        path: 'categoryId'
-      }
-    });;
+        path: "categoryId",
+      },
+    });
 
     res.status(200).json({
       status: 200,
       message: "Products found",
-      data: products
+      data: products,
     });
   } catch (error) {
     console.log(error);
@@ -2073,22 +1983,19 @@ router.get("/get-products-user", async (req, res) =>
     });
   }
 });
-router.get("/get-allproducts-user", async (req, res) =>
-{
+router.get("/get-allproducts-user", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
 
     const skip = (page - 1) * pageSize;
 
-    const products = await product.find()
-      .skip(skip)
-      .limit(pageSize);
+    const products = await product.find().skip(skip).limit(pageSize);
 
     res.status(200).json({
       status: 200,
       message: "Products found",
-      data: products
+      data: products,
     });
   } catch (error) {
     console.log(error);
@@ -2099,8 +2006,7 @@ router.get("/get-allproducts-user", async (req, res) =>
     });
   }
 });
-router.get("/get-all-related-products-user", async (req, res) =>
-{
+router.get("/get-all-related-products-user", async (req, res) => {
   try {
     const { _id, categoryId } = req.query;
 
@@ -2110,21 +2016,20 @@ router.get("/get-all-related-products-user", async (req, res) =>
       return res.status(404).json({
         status: 404,
         message: "Product not found",
-        data: null
+        data: null,
       });
     }
 
     const relatedProducts = await product.find({
       categoryId: productData.categoryId,
-      _id: { $ne: productData._id } // Exclude the current product
+      _id: { $ne: productData._id }, // Exclude the current product
     });
 
     res.status(200).json({
       status: 200,
       message: "Related Products found",
-      data: relatedProducts
+      data: relatedProducts,
     });
-
   } catch (error) {
     console.error(error);
     res.status(500).json({
@@ -2134,8 +2039,7 @@ router.get("/get-all-related-products-user", async (req, res) =>
     });
   }
 });
-router.get("/get-allproducts-search-user", async (req, res) =>
-{
+router.get("/get-allproducts-search-user", async (req, res) => {
   try {
     const page = parseInt(req.query.page) || 1;
     const pageSize = parseInt(req.query.pageSize) || 10;
@@ -2150,14 +2054,12 @@ router.get("/get-allproducts-search-user", async (req, res) =>
       query = { productname: { $regex: new RegExp(productname, "i") } };
     }
 
-    const products = await product.find(query)
-      .skip(skip)
-      .limit(pageSize);
+    const products = await product.find(query).skip(skip).limit(pageSize);
 
     res.status(200).json({
       status: 200,
       message: "Products found",
-      data: products
+      data: products,
     });
   } catch (error) {
     console.log(error);
@@ -2168,16 +2070,34 @@ router.get("/get-allproducts-search-user", async (req, res) =>
     });
   }
 });
-router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
-{
+router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
-    const subcategory1 = await product.find({ categoryId: categoryId });
-    if (subcategory1) {
+    const isDesktop = req.query.isDesktop;
+    const page = parseInt(req.query.page) || 1;
+    const limit = parseInt(req.query.limit) || 10;
+
+    let products;
+
+    if (isDesktop) {
+      const laptop = await category.findOne({ categoryname: "Laptop" });
+      let laptopId = laptop._id;
+      products = await product
+        .find({ categoryId: { $ne: laptopId } })
+        .skip((page - 1) * limit)
+        .limit(limit);
+    } else {
+      products = await product
+        .find({ categoryId: categoryId })
+        .skip((page - 1) * limit)
+        .limit(limit);
+    }
+
+    if (products) {
       res.status(200).json({
         status: 200,
         message: "product found",
-        data: subcategory1,
+        data: products,
       });
     } else {
       res.status(404).json({
@@ -2188,15 +2108,14 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) =>
     }
   } catch (error) {
     console.log(error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal Server Error",
+    res.status(400).json({
+      status: 400,
+      message: "Error: Invalid product ID",
       data: null,
     });
   }
 });
-router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) =>
-{
+router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
 
@@ -2204,10 +2123,18 @@ router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) =>
     const products = await product.find({ categoryId: categoryId });
 
     // Get distinct values for brands, hardisk, cpu, and ram
-    const distinctBrands = await product.distinct("brands", { categoryId: categoryId });
-    const distinctHardisk = await product.distinct("hardisk", { categoryId: categoryId });
-    const distinctCpu = await product.distinct("cpu", { categoryId: categoryId });
-    const distinctRam = await product.distinct("ram", { categoryId: categoryId });
+    const distinctBrands = await product.distinct("brands", {
+      categoryId: categoryId,
+    });
+    const distinctHardisk = await product.distinct("hardisk", {
+      categoryId: categoryId,
+    });
+    const distinctCpu = await product.distinct("cpu", {
+      categoryId: categoryId,
+    });
+    const distinctRam = await product.distinct("ram", {
+      categoryId: categoryId,
+    });
 
     // Return the results
     res.status(200).json({
@@ -2216,9 +2143,8 @@ router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) =>
       brands: distinctBrands,
       hardisk: distinctHardisk,
       cpu: distinctCpu,
-      ram: distinctRam
+      ram: distinctRam,
     });
-
   } catch (error) {
     console.log(error);
     res.status(500).json({
@@ -2228,8 +2154,7 @@ router.get("/getproduct-filter-bycategoryId/:categoryId", async (req, res) =>
     });
   }
 });
-router.post("/user-signup", async (req, res) =>
-{
+router.post("/user-signup", async (req, res) => {
   let qdate = new Date();
   let date = qdate.toDateString();
   let Id = Math.floor(Math.random() * 10000000) + 1;
@@ -2264,7 +2189,6 @@ router.post("/user-signup", async (req, res) =>
         user: "wasimxaman13@gmail.com",
         pass: Email_otp_pass,
       },
-
     });
     var mailoption = {
       from: "wasimxaman13@gmail.com",
@@ -2272,8 +2196,7 @@ router.post("/user-signup", async (req, res) =>
       subject: "Varify Email",
       html: `<p>Please click the following link to verify your email: <a href="https://tech-geeks.vercel.app/login">Verify Email</a></p>`,
     };
-    transpoter.sendMail(mailoption, function (error, info)
-    {
+    transpoter.sendMail(mailoption, function (error, info) {
       if (error) {
         console.log(error);
         res.status(500).json({
@@ -2295,8 +2218,7 @@ router.post("/user-signup", async (req, res) =>
     res.status(400).json({ status: 400, message: "not found", data: null });
   }
 });
-router.post("/user-Login", async (req, res) =>
-{
+router.post("/user-Login", async (req, res) => {
   try {
     const email = req.body.email;
     const password = req.body.password;
@@ -2322,7 +2244,7 @@ router.post("/user-Login", async (req, res) =>
       res.status(200).json({
         status: 200,
         message: "Login Successfully",
-        data: getmens
+        data: getmens,
       });
     } else {
       res
@@ -2334,8 +2256,7 @@ router.post("/user-Login", async (req, res) =>
     res.status(400).json({ status: 400, message: "invalid email", data: null });
   }
 });
-router.post("/send-otp", async (req, res) =>
-{
+router.post("/send-otp", async (req, res) => {
   try {
     let email = req.body.email;
     const mail = await userauth.findOne({ email: email });
@@ -2364,8 +2285,7 @@ router.post("/send-otp", async (req, res) =>
         subject: "sending email using nodejs",
         text: `Varify Email OTP ${random}`,
       };
-      transpoter.sendMail(mailoption, function (error, info)
-      {
+      transpoter.sendMail(mailoption, function (error, info) {
         if (error) {
           console.log(error);
           res.status(500).json({
@@ -2398,8 +2318,7 @@ router.post("/send-otp", async (req, res) =>
     });
   }
 });
-router.post("/emailVrifyOtp", async (req, res) =>
-{
+router.post("/emailVrifyOtp", async (req, res) => {
   try {
     const email = req.body.email;
     const code = req.body.code;
@@ -2434,61 +2353,63 @@ router.post("/emailVrifyOtp", async (req, res) =>
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
   }
 });
-router.put("/update-user-profile/:_id", upload.single("image"), async (req, res) =>
-{
-  try {
-    const id = req.params._id;
+router.put(
+  "/update-user-profile/:_id",
+  upload.single("image"),
+  async (req, res) => {
+    try {
+      const id = req.params._id;
 
-    const user = await userauth.findOne({ _id: id });
+      const user = await userauth.findOne({ _id: id });
 
-    if (!user) {
-      return res.status(404).json({
-        status: 404,
-        message: "user not found",
+      if (!user) {
+        return res.status(404).json({
+          status: 404,
+          message: "user not found",
+          data: null,
+        });
+      }
+      const file = req.file;
+      let profileImageURL = user.image;
+
+      if (file) {
+        profileImageURL = `data:image/png;base64,${file.buffer.toString(
+          "base64"
+        )}`;
+
+        const result = await cloudinary.uploader.upload(profileImageURL);
+        profileImageURL = result.url;
+      }
+      const updatedUser = await userauth.findOneAndUpdate(
+        { _id: id },
+        { ...req.body, image: profileImageURL },
+        { new: true, runValidators: true }
+      );
+
+      if (!updatedUser) {
+        return res.status(404).json({
+          status: 404,
+          message: "user not found",
+          data: null,
+        });
+      }
+
+      res.status(200).json({
+        status: 200,
+        message: "user updated successfully",
+        data: updatedUser,
+      });
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({
+        status: 500,
+        message: "Internal server error",
         data: null,
       });
     }
-    const file = req.file;
-    let profileImageURL = user.image;
-
-    if (file) {
-      profileImageURL = `data:image/png;base64,${file.buffer.toString(
-        "base64"
-      )}`;
-
-      const result = await cloudinary.uploader.upload(profileImageURL);
-      profileImageURL = result.url;
-    }
-    const updatedUser = await userauth.findOneAndUpdate(
-      { _id: id },
-      { ...req.body, image: profileImageURL },
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedUser) {
-      return res.status(404).json({
-        status: 404,
-        message: "user not found",
-        data: null,
-      });
-    }
-
-    res.status(200).json({
-      status: 200,
-      message: "user updated successfully",
-      data: updatedUser,
-    });
-  } catch (error) {
-    console.error(error);
-    res.status(500).json({
-      status: 500,
-      message: "Internal server error",
-      data: null,
-    });
   }
-});
-router.delete("/user_image/:id", async (req, res) =>
-{
+);
+router.delete("/user_image/:id", async (req, res) => {
   try {
     const productId = req.params.id;
     const user = await userauth.findById(productId);
@@ -2511,12 +2432,14 @@ router.delete("/user_image/:id", async (req, res) =>
       });
     }
 
-    const parts = image.split('/');
+    const parts = image.split("/");
     const lastPart = parts[parts.length - 1];
-    const publicId = lastPart.split('.')[0];
+    const publicId = lastPart.split(".")[0];
 
     // Delete the image from Cloudinary
-    const result = await cloudinary.uploader.destroy(publicId, { resource_type: 'image' });
+    const result = await cloudinary.uploader.destroy(publicId, {
+      resource_type: "image",
+    });
     console.log(result);
 
     // Remove the image field from the user document
@@ -2537,8 +2460,7 @@ router.delete("/user_image/:id", async (req, res) =>
     });
   }
 });
-router.post("/changePassword", async (req, res) =>
-{
+router.post("/changePassword", async (req, res) => {
   try {
     const email = req.body.email;
     const mailVarify = await userauth.findOne({ email: email });
@@ -2553,21 +2475,17 @@ router.post("/changePassword", async (req, res) =>
         message: "password change successful",
         data: mailVarify,
       });
-
-
     } else {
-
-      res.status(400).json({ status: 400, message: "email not exist", data: null });
+      res
+        .status(400)
+        .json({ status: 400, message: "email not exist", data: null });
     }
-
-
   } catch (error) {
     console.log(error);
     res.status(400).json({ status: 400, message: "Invalid Otp", data: null });
   }
 });
-router.post("/add-or-remove-product-item-addtocart", async (req, res) =>
-{
+router.post("/add-or-remove-product-item-addtocart", async (req, res) => {
   try {
     const productId = req.body.productId;
     const userId = req.body.userId;
@@ -2614,8 +2532,7 @@ router.post("/add-or-remove-product-item-addtocart", async (req, res) =>
     });
   }
 });
-router.get("/get-product-item-to-addtocart/:userId", async (req, res) =>
-{
+router.get("/get-product-item-to-addtocart/:userId", async (req, res) => {
   try {
     const userId = req.params.userId;
     const page = parseInt(req.query.page) || 1;
@@ -2625,10 +2542,11 @@ router.get("/get-product-item-to-addtocart/:userId", async (req, res) =>
     const data = await cartitem.findOne({ userId: userId });
 
     if (data) {
-      const data1 = await cartitem.find(
-        { userId: userId },
-        { _id: 0, userId: 0, createdAt: 0, updatedAt: 0, __v: 0 }
-      )
+      const data1 = await cartitem
+        .find(
+          { userId: userId },
+          { _id: 0, userId: 0, createdAt: 0, updatedAt: 0, __v: 0 }
+        )
         .populate("productId")
         .skip(skip);
 
@@ -2661,8 +2579,7 @@ router.get("/get-product-item-to-addtocart/:userId", async (req, res) =>
     });
   }
 });
-router.get("/get-foodid-to-addtocart", async (req, res) =>
-{
+router.get("/get-foodid-to-addtocart", async (req, res) => {
   try {
     const userId = String(req.query.userId);
     const productId = String(req.query.productId);
@@ -2689,12 +2606,15 @@ router.get("/get-foodid-to-addtocart", async (req, res) =>
     });
   }
 });
-router.put("/product-item-addtocart-quantity-inc", async (req, res) =>
-{
+router.put("/product-item-addtocart-quantity-inc", async (req, res) => {
   try {
     const userId = String(req.query.userId);
     const productId = String(req.query.productId);
-    const data = await cartitem.findOne({ userId, productId, status: "Active" });
+    const data = await cartitem.findOne({
+      userId,
+      productId,
+      status: "Active",
+    });
 
     if (!data) {
       res.status(200).json({
@@ -2723,13 +2643,16 @@ router.put("/product-item-addtocart-quantity-inc", async (req, res) =>
     });
   }
 });
-router.put("/product-item-addtocart-quantity-dec", async (req, res) =>
-{
+router.put("/product-item-addtocart-quantity-dec", async (req, res) => {
   try {
     const userId = String(req.query.userId);
     const productId = String(req.query.productId);
 
-    const data = await cartitem.findOne({ userId, productId, status: "Active" });
+    const data = await cartitem.findOne({
+      userId,
+      productId,
+      status: "Active",
+    });
 
     if (!data) {
       res.status(404).json({
@@ -2767,15 +2690,13 @@ router.put("/product-item-addtocart-quantity-dec", async (req, res) =>
     });
   }
 });
-router.get("/get-allstate-user", async (req, res) =>
-{
+router.get("/get-allstate-user", async (req, res) => {
   try {
-
-    const products = await state.find()
+    const products = await state.find();
     res.status(200).json({
       status: 200,
       message: "state found",
-      data: products
+      data: products,
     });
   } catch (error) {
     console.log(error);
@@ -2786,8 +2707,7 @@ router.get("/get-allstate-user", async (req, res) =>
     });
   }
 });
-router.put("/user-changePassword", async (req, res) =>
-{
+router.put("/user-changePassword", async (req, res) => {
   try {
     const email = req.body.email;
     const mailVarify = await userauth.findOne({ email: email });
