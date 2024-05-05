@@ -2070,12 +2070,14 @@ router.get("/get-allproducts-search-user", async (req, res) => {
     });
   }
 });
+let page = 1; // Initialize page at 1
+
 router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
   try {
     const categoryId = req.params.categoryId;
     const isDesktop = req.query.isDesktop;
     const page = parseInt(req.query.page) || 1;
-    const limit = parseInt(req.query.limit) || 10;
+    const limit = page * 2;
 
     let products;
 
@@ -2084,20 +2086,13 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
       let laptopId = laptop._id;
       products = await product
         .find({ categoryId: { $ne: laptopId } })
-        .skip((page - 1) * limit)
-        .limit(limit);
+        .limit(limit); // Remove the skip function
 
       if (products.length === 0) {
-        products = await product
-          .find({})
-          .skip((page - 1) * limit)
-          .limit(limit);
+        products = await product.find({}).limit(limit); // Remove the skip function
       }
     } else {
-      products = await product
-        .find({ categoryId: categoryId })
-        .skip((page - 1) * limit)
-        .limit(limit);
+      products = await product.find({ categoryId: categoryId }).limit(limit); // Remove the skip function
     }
 
     if (products) {
