@@ -2086,6 +2086,13 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
         .find({ categoryId: { $ne: laptopId } })
         .skip((page - 1) * limit)
         .limit(limit);
+
+      if (products.length === 0) {
+        products = await product
+          .find({})
+          .skip((page - 1) * limit)
+          .limit(limit);
+      }
     } else {
       products = await product
         .find({ categoryId: categoryId })
