@@ -2077,7 +2077,7 @@ router.get("/getproduct-bycategoryId/:categoryId", async (req, res) => {
     const categoryId = req.params.categoryId;
     const isDesktop = req.query.isDesktop;
     const page = parseInt(req.query.page) || 1;
-    const limit = page * 2;
+    const limit = page * 12;
 
     let products;
 
